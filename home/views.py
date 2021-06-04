@@ -1,16 +1,25 @@
-
 from home.models import Setting
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from  home.models import *
+from product.models import Category, Product
 # Create your views here.
 def index(request):
 
     setting = Setting.objects.get(pk = 1)
+    category = Category.objects.all()
+    products_slider = Product.objects.all().order_by('id')[:4] #first 4 product
+    products_lasted = Product.objects.all().order_by('-id')[:4] #last 4 product
+    products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
     page = "home"
-    context = {'setting': setting, 'page': page}
+    context = {'setting': setting, 
+                'page': page, 
+                'category':category,
+                'products_slider':products_slider,
+                'products_lasted':products_lasted,
+                'products_picked':products_picked}
     return render(request, 'home/index.html', context)
 
 def aboutUs(request):   
@@ -36,3 +45,9 @@ def contact(request):
     form = ContactForm
     context = {'setting': setting, 'form': form}
     return render(request, 'home/contact.html', context)
+
+
+def category_products(request, id, slug):
+    setting = Setting.objects.get(pk=1)
+    products = Product.objects.filter(category_id=id)
+    return HttpResponse(products)
