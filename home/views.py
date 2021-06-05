@@ -5,13 +5,15 @@ from django.http import HttpResponse
 from django.contrib import messages
 from  home.models import *
 from product.models import Category, Product
+
+from home.forms import SearchForm
 # Create your views here.
 def index(request):
 
     setting = Setting.objects.get(pk = 1)
     category = Category.objects.all()
     products_slider = Product.objects.all().order_by('id')[:4] #first 4 product
-    products_lasted = Product.objects.all().order_by('-id')[:4] #last 4 product
+    products_lasted = Product.objects.all() #last 4 product
     products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
     page = "home"
     context = {'setting': setting, 
@@ -22,12 +24,14 @@ def index(request):
                 'products_picked':products_picked}
     return render(request, 'home/index.html', context)
 
-def aboutUs(request):   
+def aboutUs(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
-    context = {'setting': setting}
+    context = {'setting': setting,'category':category}
     return render(request, 'home/about.html', context)
 
 def contact(request):
+    category = Category.objects.all()  #hiển thị thanh navbar
     if request.method == 'POST': # check post
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -43,11 +47,34 @@ def contact(request):
 
     setting = Setting.objects.get(pk=1)
     form = ContactForm
-    context = {'setting': setting, 'form': form}
+    context = {'setting': setting, 'form': form,'category':category}
     return render(request, 'home/contact.html', context)
 
 
 def category_products(request, id, slug):
-    setting = Setting.objects.get(pk=1)
+ 
+    category = Category.objects.all()
     products = Product.objects.filter(category_id=id)
-    return HttpResponse(products)
+    context = {'products':products,
+                'category':category,
+                }
+    return render(request, 'home/category_products.html', context)
+
+
+def search(request):
+    if request.method == 'POST': # check post
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            query = form.cleaned_data['query'] # get form input data
+            catid = form.cleaned_data['catid']
+            if catid==0:
+                products=Product.objects.filter(title__icontains=query)  #SELECT * FROM product WHERE title LIKE '%query%'
+            else:
+                products = Product.objects.filter(title__icontains=query,category_id=catid)
+
+            category = Category.objects.all()
+            context = {'products': products, 'query':query,
+                       'category': category }
+            return render(request, 'home/search_products.html', context)
+
+    return HttpResponseRedirect('/')

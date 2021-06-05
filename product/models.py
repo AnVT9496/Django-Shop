@@ -27,7 +27,7 @@ class Category(MPTTModel):
         order_insertion_by = ['title']
     
     def get_absolute_url(self):
-        return reverse("category_detail", kwargs={"slug": self.slug})
+        return reverse('category_detail', kwargs={'slug': self.slug})
     
 
     #dùng để biết category tree trong trang Product-Admin
@@ -69,7 +69,7 @@ class Product(models.Model):
             return ""
 
     def get_absolute_url(self):
-        return reverse("category_detail", kwargs={"slug": self.slug})
+        return reverse('category_detail', kwargs={'slug': self.slug})
         ## method to create a fake table field in read only mode
     # def image_tag(self):
     #         return mark_safe('<img src="{}" height="50"/>'.format(self.image.url))

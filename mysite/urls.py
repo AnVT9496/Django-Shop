@@ -18,7 +18,7 @@ from django.urls import path
 from django.urls.conf import include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from home import views
 import home
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +27,9 @@ urlpatterns = [
     # path('aboutus/', include('home.urls')),
     path('product/', include('product.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    # path('about/', views.aboutUs, name='aboutus'),
+    # path('contact/', views.contact, name='contact'),
+    # path('category/<int:id>/<slug:slug>', views.category_products, name='category_products')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
