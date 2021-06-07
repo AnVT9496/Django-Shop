@@ -6,6 +6,8 @@ from django.contrib import messages
 from  home.models import *
 from product.models import Category, Product
 
+import json
+
 from home.forms import SearchForm
 # Create your views here.
 def index(request):
@@ -78,3 +80,19 @@ def search(request):
             return render(request, 'home/search_products.html', context)
 
     return HttpResponseRedirect('/')
+
+
+def search_auto(request):
+  if request.is_ajax():
+    q = request.GET.get('term', '')
+    products = Product.objects.filter(title__icontains=q)
+    results = []
+    for rs in products:
+      products_json = {}
+      products_json = rs.title
+      results.append(products_json)
+    data = json.dumps(results)
+  else:
+    data = 'fail'
+  mimetype = 'application/json'
+  return HttpResponse(data, mimetype)
