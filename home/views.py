@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from  home.models import *
-from product.models import Category, Images, Product
+from product.models import Category, Comment, Images, Product
 
 import json
 
@@ -102,9 +102,12 @@ def search_auto(request):
 def product_detail(request, id, slug):
     category = Category.objects.all()
     product = Product.objects.get(pk=id)
-    images = Images.objects.filter(product_id=id).order_by('?')[:3]
+    images = Images.objects.filter(product_id=id)
+    
+    comments = Comment.objects.filter(product_id=id,status='True')
     context = {'product':product,
                 'category':category,
                 'images': images,
+                'comments':comments,
                 }
     return render(request, 'home/product_detail.html', context)
