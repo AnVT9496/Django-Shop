@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from  home.models import *
-from product.models import Category, Product
+from product.models import Category, Images, Product
 
 import json
 
@@ -15,6 +15,7 @@ def index(request):
     setting = Setting.objects.get(pk = 1)
     category = Category.objects.all()
     products_slider = Product.objects.all().order_by('id')[:4] #first 4 product
+    product_newest = Product.objects.all().order_by('-create_at') #sản phẩm mới nhất
     products_lasted = Product.objects.all() #last 4 product
     products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
     page = "home"
@@ -22,6 +23,7 @@ def index(request):
                 'page': page, 
                 'category':category,
                 'products_slider':products_slider,
+                'product_newest':product_newest,
                 'products_lasted':products_lasted,
                 'products_picked':products_picked}
     return render(request, 'home/index.html', context)
@@ -96,3 +98,13 @@ def search_auto(request):
     data = 'fail'
   mimetype = 'application/json'
   return HttpResponse(data, mimetype)
+
+def product_detail(request, id, slug):
+    category = Category.objects.all()
+    product = Product.objects.get(pk=id)
+    images = Images.objects.filter(product_id=id).order_by('?')[:3]
+    context = {'product':product,
+                'category':category,
+                'images': images,
+                }
+    return render(request, 'home/product_detail.html', context)
