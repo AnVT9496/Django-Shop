@@ -1,3 +1,4 @@
+from order.views import shopcart
 from home.models import Setting
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -5,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from  home.models import *
 from product.models import Category, Comment, Images, Product
-
+from order.models import ShopCart
 import json
 
 from home.forms import SearchForm
@@ -18,6 +19,13 @@ def index(request):
     product_newest = Product.objects.all().order_by('-create_at') #sản phẩm mới nhất
     products_lasted = Product.objects.all() #last 4 product
     products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
+
+    current_user = request.user #access user session information
+    shopcart = ShopCart.objects.filter(user_id = current_user.id)
+    total = 0
+    for rs in shopcart:
+        total += rs.product.price * rs.quantity
+
     page = "home"
     context = {'setting': setting, 
                 'page': page, 
@@ -25,7 +33,8 @@ def index(request):
                 'products_slider':products_slider,
                 'product_newest':product_newest,
                 'products_lasted':products_lasted,
-                'products_picked':products_picked}
+                'products_picked':products_picked,
+                'total':total}
     return render(request, 'home/index.html', context)
 
 def aboutUs(request):
@@ -56,11 +65,13 @@ def contact(request):
 
 
 def category_products(request, id, slug):
- 
+    shopcart = ShopCart.objects.all()
+
     category = Category.objects.all()
     products = Product.objects.filter(category_id=id)
     context = {'products':products,
                 'category':category,
+                'shopcart':shopcart
                 }
     return render(request, 'home/category_products.html', context)
 
@@ -76,9 +87,11 @@ def search(request):
             else:
                 products = Product.objects.filter(title__icontains=query,category_id=catid)
 
+            shopcart = ShopCart.objects.all()
+
             category = Category.objects.all()
             context = {'products': products, 'query':query,
-                       'category': category }
+                       'category': category, 'shopcart':shopcart }
             return render(request, 'home/search_products.html', context)
 
     return HttpResponseRedirect('/')

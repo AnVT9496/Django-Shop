@@ -20,8 +20,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from home import views
 import home
+from order import views as OrderViews
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    #home
     path('', include('home.urls')),
     path('home/', include('home.urls')),
 
@@ -29,8 +32,15 @@ urlpatterns = [
     path('product/', include('product.urls')),
     path('product/<int:id>/<slug:slug>/', views.product_detail, name='product_detail'),
 
-    #for admin
+    #orders
+    path('order/', include('order.urls')),
+
+    #shop cart in home
+    path('shopcart/', OrderViews.shopcart, name='shopcart'),
+
+    #for admin in product detail
     path('ckeditor/', include('ckeditor_uploader.urls')),
+
 
 ]
 if settings.DEBUG:
