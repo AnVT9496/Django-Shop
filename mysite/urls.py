@@ -38,6 +38,9 @@ urlpatterns = [
     #shop cart in home
     path('shopcart/', OrderViews.shopcart, name='shopcart'),
 
+    #for user
+    path('user/', include('user.urls')),
+    
     #for admin in product detail
     path('ckeditor/', include('ckeditor_uploader.urls')),
 
