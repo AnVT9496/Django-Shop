@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from home import views
 import home
 from order import views as OrderViews
+from user import views as UserViews
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -40,9 +41,12 @@ urlpatterns = [
 
     #for user
     path('user/', include('user.urls')),
-    
+    path('login/', UserViews.login_form, name='login_form'),
+    path('logout/', UserViews.logout_func, name='logout_func'),
+    path('signup/', UserViews.signup_form, name='signup_form'),
+
     #for admin in product detail
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),   
 
 
 ]
