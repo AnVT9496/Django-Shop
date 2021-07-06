@@ -122,7 +122,13 @@
 							<a href="/shopcart/" >
 								<div class="header-btns-icon">
 									<i class="fa fa-shopping-cart"></i>
-									<span class="qty">3</span>
+									<span class="qty" id="cart-count">
+										{% with total_quantity=cart|length %}
+											{%if total_quantity > 0 %}
+                    							{{ total_quantity}}
+											{% endif %}
+										{% endwith %}
+									</span>
 								</div>
 								<strong class="text-uppercase">My Cart:</strong>
 								<br>

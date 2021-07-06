@@ -1,3 +1,4 @@
+from django.conf import settings
 import user
 from user.forms import SignUpForm
 from django.http.response import HttpResponseRedirect
@@ -6,6 +7,7 @@ from django.http import HttpResponse
 from product.models import *
 from user.models import *
 from order.models import *
+from order.cart import persist_session_vars
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
@@ -71,6 +73,8 @@ def signup_form(request):
                 'form': form}
     return render(request, 'user/signup_form.html', context)
 
+
+@persist_session_vars([settings.CART_SESSION_ID])
 def logout_func(request):
     logout(request)
     return HttpResponseRedirect('/')

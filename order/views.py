@@ -1,80 +1,148 @@
 from django.http.request import HttpRequest
 from product.models import Category, Product
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from order.models import OrderDetail, ShopCart, ShopCartForm, OrderForm, Order
-from django.http.response import  HttpResponseRedirect
-from django.shortcuts import render
+from django.http.response import  HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 
 from django.utils.crypto import get_random_string
 from user.models import *
+from .cart import Cart
 # Create your views here.
 def index(request):
     return HttpResponse('order page')
 
 # @login_required(login_url='/login') # Check login
-def addToShopCart(request,id):
-    url =  request.META.get('HTTP_REFERER') #get last url
-    current_user = request.user #access user session information
+# def addToShopCart(request,id):
+#     url =  request.META.get('HTTP_REFERER') #get last url
+#     current_user = request.user #access user session information
 
-    checkproduct = ShopCart.objects.filter(product_id = id) #ccheck product in shopcart
-    if checkproduct:
-        control = 1 #the product is in cart
-    else:
-        control = 0 #the product is not in cart
+#     checkproduct = ShopCart.objects.filter(product_id = id) #ccheck product in shopcart
+#     if checkproduct:
+#         control = 1 #the product is in cart
+#     else:
+#         control = 0 #the product is not in cart
 
-    if request.method == 'POST': #if there is a POST  (for product detail)
-        form = ShopCartForm(request.POST)
-        if form.is_valid():
-            if control == 1:
-                data = ShopCart.objects.get(product_id=id)
-                data.quantity += form.cleaned_data['quantity']
-                data.save() #save data
-            else: #insert to shopcart
-                data = ShopCart()
-                data.user_id = current_user.id
-                data.product_id = id
-                data.quantity = form.cleaned_data['quantity']
-                data.save()
-        messages.success(request, "Product added to Cart")
-        return HttpResponseRedirect(url)
+#     if request.method == 'POST': #if there is a POST  (for product detail)
+#         form = ShopCartForm(request.POST)
+#         if form.is_valid():
+#             if control == 1:
+#                 data = ShopCart.objects.get(product_id=id)
+#                 data.quantity += form.cleaned_data['quantity']
+#                 data.save() #save data
+#             else: #insert to shopcart
+#                 data = ShopCart()
+#                 data.user_id = current_user.id
+#                 data.product_id = id
+#                 data.quantity = form.cleaned_data['quantity']
+#                 data.save()
+#         messages.success(request, "Product added to Cart")
+#         return HttpResponseRedirect(url)
 
-    else: #if no POST ( just add one product)
-        if control ==1 : #update shopcart
-            data = ShopCart.objects.get(product_id = id)
-            data.quantity += 1
-            data.save()
-        else: #insert to shopcart
-            data = ShopCart()
-            data.user_id = current_user.id
-            data.product_id = id
-            data.quantity = 1
-            data.save()
-        messages.success(request, "Product added to Cart")
-        return HttpResponseRedirect(url)
+#     else: #if no POST ( just add one product)
+#         if control ==1 : #update shopcart
+#             data = ShopCart.objects.get(product_id = id)
+#             data.quantity += 1
+#             data.save()
+#         else: #insert to shopcart
+#             data = ShopCart()
+#             data.user_id = current_user.id
+#             data.product_id = id
+#             data.quantity = 1
+#             data.save()
+#         messages.success(request, "Product added to Cart")
+#         return HttpResponseRedirect(url)
+
+
+def addToShopCart(request, id):
+    """
+    Method add product to session cart
+    Param: 
+        product_id : int
+        quantity : int
+    Result:
+        Save product to cart session, 
+    Return total quantity 
+    
+    """
+    cart = Cart(request)
+    if request.POST.get('action') == 'post':
+        id = int(request.POST.get('id'))
+        quantity = int(request.POST.get('qty'))
+        product = get_object_or_404(Product, id=id)
+        cart.add(product=product, quantity=quantity)
+        cart_qty_total = cart.__len__()
+        response = JsonResponse({'quantity': cart_qty_total})
+    return response
+
+
+# def shopcart(request):
+#     category = Category.objects.all()
+#     current_user = request.user #access user session information
+#     shopcart = ShopCart.objects.filter(user_id = current_user.id)
+
+#     total = 0
+#     for rs in shopcart:
+#         total += rs.product.price * rs.quantity
+#     # return HttpResponse(str(total))
+    
+#     context = {'shopcart': shopcart,
+#                 'category':category,
+#                 'total':total}
+#     return render(request, 'order/shopcart_products.html', context)
+
 
 def shopcart(request):
+    """
+    Show all products user added to session cart
+    """
     category = Category.objects.all()
-    current_user = request.user #access user session information
-    shopcart = ShopCart.objects.filter(user_id = current_user.id)
+    cart = Cart(request)
+    context = {
+        "cart": cart,
+        'category':category,
+    }
+    return render(request,'order/shopcart_products.html', context)
 
-    total = 0
-    for rs in shopcart:
-        total += rs.product.price * rs.quantity
-    # return HttpResponse(str(total))
-    
-    context = {'shopcart': shopcart,
-                'category':category,
-                'total':total}
-    return render(request, 'order/shopcart_products.html', context)
 
 # @login_required(login_url='/login') # Check login
-def deletefromcart(request, id):
-    ShopCart.objects.filter(id=id).delete()
-    messages.success(request, "Your item deleted from Shop Cart")
-    return HttpResponseRedirect("/shopcart")
+# def deletefromcart(request, id):
+#     ShopCart.objects.filter(id=id).delete()
+#     messages.success(request, "Your item deleted from Shop Cart")
+#     return HttpResponseRedirect("/shopcart")
 
 
+def deletefromcart(request):
+    """
+    Method update product from session cart
+    Param: 
+        product_id : int
+        quantity : int
+    Result:
+        update quantity of selected product from cart session 
+    Return: total quantiy, total price of cart
+    
+    """
+    cart = Cart(request)
+    response = None
+    if request.POST.get('action') == "post":
+        id = int(request.POST.get('id'))
+        cart.delete(product_id=id)
+        cart_qty_total = cart.__len__()
+        cart_subtotal = cart.get_subtotal_price()
+        cart_totalprice = cart.get_total_price()
+        context = {
+            'quantity': cart_qty_total,
+            'subtotal': cart_subtotal,
+            'total': cart_totalprice
+        }
+        response = JsonResponse(context)
+    return response    
+
+
+@login_required(login_url='login_form')
 def orderdetail(request):
     category = Category.objects.all()
     current_user = request.user
