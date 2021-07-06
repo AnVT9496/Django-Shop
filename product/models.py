@@ -112,3 +112,11 @@ class CommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['subject', 'comment', 'rate']
+
+
+class Promotion(models.Model):
+    code = models.CharField(max_length = 20)
+    discount = models.BigIntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
