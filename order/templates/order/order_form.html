@@ -60,8 +60,8 @@
                             <div class="section-title">
                                 <h4 class="title">Payment Information</h4>
                             </div>
-                            <p><label for="id_first_name">Total: {{ total }} USD </label>
-                                <input type="text" name="total" class="input" readonly value="${{ total }}"></p>
+                            <p><label for="id_first_name">Total: {{ shopcart.get_total_price }} USD </label>
+                                <input type="text" name="total" class="input" readonly value="${{ shopcart.get_total_price }}"></p>
                             <p><label for="id_first_name">Credit Card Holder</label>
                                 <input type="text" name="holder" class="input"  value=""></p>
                             <p><label for="id_first_name">Credit Card Number</label>
@@ -111,7 +111,7 @@
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>SUBTOTAL</th>
-										<th colspan="2" class="sub-total">${{total}}</th>
+										<th colspan="2" class="sub-total">${{shopcart.get_subtotal_price}}</th>
 									</tr>
 									<tr>
 										<th class="empty" colspan="3"></th>
@@ -121,7 +121,7 @@
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>TOTAL</th>
-										<th colspan="2" class="total">${{total}}</th>
+										<th colspan="2" class="total">${{shopcart.get_total_price}}</th>
 									</tr>
 								</tfoot>
 							</table>

@@ -5,7 +5,7 @@ from functools import wraps
 from product.models import Product
 
 
-class Cart:
+class Cart(object):
     """
     A base Cart class, providing some default behaviors that can be
     inherited or overrided, as necessary
@@ -38,10 +38,11 @@ class Cart:
         cart = self.cart.copy()
 
         for product in products:
-            cart[str(product.id)]['product'] = product
+            cart[str(product.id)]['product'] = product.title
+            cart[str(product.id)]['product_id'] = product.id
 
         for item in cart.values():
-            item['price'] = Decimal(item['price'])
+            item['price'] = float(item['price'])
             item['total_price'] = item['price'] * item['quantity']
             yield item
 
@@ -55,14 +56,14 @@ class Cart:
         """
         return subtotal of items in cart
         """
-        return sum(Decimal(item['price']) * item['quantity'] 
+        return sum(float(item['price']) * item['quantity'] 
             for item in self.cart.values())
     
     def get_total_price(self):
         """
         get total price of total items in cart, include shipping and coupon value
         """
-        subtotal = sum(Decimal(item['price']) * item['quantity'] 
+        subtotal = sum(float(item['price']) * item['quantity'] 
             for item in self.cart.values())
         total = subtotal        
         return total

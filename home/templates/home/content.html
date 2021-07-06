@@ -1,4 +1,26 @@
     {% load static %}
+
+	<!-- add modal -->
+	<div style="height: 118px; background-color: black;" class=""></div>
+	<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Notification</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			Add to cart success
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		</div>
+		</div>
+	</div>
+	</div>
+
 	<!-- section -->
 
 	<!-- section -->
@@ -90,7 +112,8 @@
 							<div class="product-btns">
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-								<a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								{% comment %} <a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a> {% endcomment %}
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -129,7 +152,8 @@
 							<div class="product-btns">
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-								<a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								{% comment %} <a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a> {% endcomment %}
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -171,7 +195,8 @@
 							<div class="product-btns">
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-								<a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								{% comment %} <a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a> {% endcomment %}
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -202,7 +227,8 @@
 							<div class="product-btns">
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-								<button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+								{% comment %} <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button> {% endcomment %}
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -232,7 +258,8 @@
 							<div class="product-btns">
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-								<button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+								{% comment %} <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button> {% endcomment %}
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -263,7 +290,8 @@
 							<div class="product-btns">
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
-								<button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+								{% comment %} <button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button> {% endcomment %}
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -275,3 +303,31 @@
 		<!-- /container -->
 	</div>
 	<!-- /section -->
+	<script>
+    $(document).on('click','#add-cart-button', function(e){
+      e.preventDefault();
+      const id = $(this).attr('value');
+      const qty = 1;
+	  var patch = '{% url "addtoshopcart" id=0 %}'.replace('0', id);
+      $.ajax({
+        type:'POST',
+        url: patch,
+        data: {
+          id: id,
+          qty:qty,
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          action: 'post'
+        },
+        success: function(json){
+          console.log(json)
+          document.getElementById("cart-count").innerHTML = json.quantity;
+		  document.getElementById("cart-price").innerHTML = json.subtotal;
+          $("#AddModal").modal();
+
+        },
+        error: function(xhr,errmsg,err){
+          console.log(xhr);
+        }
+      });
+    })
+	</script>

@@ -246,7 +246,8 @@
         },
         success: function(json){
           console.log(json)
-          document.getElementById("cart-count").innerHTML = json.quantity
+          document.getElementById("cart-count").innerHTML = json.quantity;
+		  document.getElementById("cart-price").innerHTML = json.subtotal;
           $("#AddModal").modal();
 
         },

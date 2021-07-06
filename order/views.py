@@ -74,7 +74,13 @@ def addToShopCart(request, id):
         product = get_object_or_404(Product, id=id)
         cart.add(product=product, quantity=quantity)
         cart_qty_total = cart.__len__()
-        response = JsonResponse({'quantity': cart_qty_total})
+        cart_subtotal = cart.get_subtotal_price()
+        context = {
+            'subtotal': cart_subtotal,
+            'quantity': cart_qty_total
+        }
+        
+        response = JsonResponse(context)
     return response
 
 
@@ -146,10 +152,11 @@ def deletefromcart(request):
 def orderdetail(request):
     category = Category.objects.all()
     current_user = request.user
-    shopcart = ShopCart.objects.filter(user_id=current_user.id)
-    total = 0
-    for rs in shopcart:
-        total += rs.product.price * rs.quantity
+    # shopcart = ShopCart.objects.filter(user_id=current_user.id)
+    cart = Cart(request)
+    # total = 0
+    # for rs in shopcart:
+    #     total += rs.product.price * rs.quantity
 
     if request.method == 'POST':  # if there is a post
         form = OrderForm(request.POST)
@@ -165,7 +172,7 @@ def orderdetail(request):
             data.city = form.cleaned_data['city']
             data.phone = form.cleaned_data['phone']
             data.user_id = current_user.id
-            data.total = total
+            data.total = cart.get_total_price()
             data.ip = request.META.get('REMOTE_ADDR')
             ordercode= get_random_string(5).upper() # random cod
             data.code =  ordercode
@@ -173,18 +180,18 @@ def orderdetail(request):
 
             #move shopcart items to order detail item
             # shopcart = ShopCart.objects.filter(user_id=current_user.id)
-            for rs in shopcart:
+            for rs in cart:
                 detail = OrderDetail()
                 detail.order_id     = data.id # Order Id
-                detail.product_id   = rs.product_id
+                detail.product_id   = rs['product_id']
                 detail.user_id      = current_user.id
-                detail.quantity     = rs.quantity
-                detail.price        = rs.product.price
-                detail.amount       = rs.amount
+                detail.quantity     = rs['quantity']
+                detail.price        = rs['price']
+                detail.amount       = rs['total_price']
                 detail.save()
                 # ***Reduce quantity of sold product from Amount of Product
-                product = Product.objects.get(id=rs.product_id)
-                product.amount -= rs.quantity
+                product = Product.objects.get(id=rs['product_id'])
+                product.amount -= rs['quantity']
                 product.save()
                 #-----------------------
 
@@ -198,9 +205,9 @@ def orderdetail(request):
 
     form= OrderForm()
     profile = UserProfile.objects.get(user_id=current_user.id)
-    context = {'shopcart': shopcart,
+    context = {'shopcart': cart,
                'category': category,
-               'total': total,
+            #    'total': total,
                'form': form,
                'profile': profile,
                }
