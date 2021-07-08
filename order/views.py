@@ -8,8 +8,15 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 
 from django.utils.crypto import get_random_string
+
 from user.models import *
+from product.models import Promotion, Voucher
+
 from .cart import Cart
+
+import datetime
+
+
 # Create your views here.
 def index(request):
     return HttpResponse('order page')
@@ -76,7 +83,7 @@ def addToShopCart(request, id):
         cart_qty_total = cart.__len__()
         cart_subtotal = cart.get_subtotal_price()
         context = {
-            'subtotal': cart_subtotal,
+            'subtotal': str(cart_subtotal),
             'quantity': cart_qty_total
         }
         
@@ -141,7 +148,7 @@ def deletefromcart(request):
         cart_totalprice = cart.get_total_price()
         context = {
             'quantity': cart_qty_total,
-            'subtotal': cart_subtotal,
+            'subtotal': str(cart_subtotal),
             'total': cart_totalprice
         }
         response = JsonResponse(context)
@@ -195,8 +202,9 @@ def orderdetail(request):
                 product.save()
                 #-----------------------
 
-            ShopCart.objects.filter(user_id=current_user.id).delete() # Clear & Delete shopcart
-            request.session['cart_items']=0
+            # ShopCart.objects.filter(user_id=current_user.id).delete() # Clear & Delete shopcart
+            # request.session['cart_items']=0
+            cart.clear()
             messages.success(request, "Your Order has been completed. Thank you ")
             return render(request, 'order/order_completed.html',{'ordercode':ordercode,'category': category})
         else:
@@ -212,3 +220,36 @@ def orderdetail(request):
                'profile': profile,
                }
     return render(request, 'order/order_form.html', context)
+
+
+def add_coupon(request):
+    """
+    Method add voucher to session and get value from voucher add to cart session 
+    Param: 
+        code : from request.POST
+    result:
+        add voucher to session
+    Return: json to ajax method
+    """
+    cart = Cart(request)
+    session = request.session
+    if request.method=="POST":
+        code = request.POST.get('code')
+        try:    
+            voucher = Voucher.objects.get(code = code)
+            if voucher.start_date <= datetime.date.today() <= voucher.end_date:
+                cart_totalprice = cart.add_coupon(voucher.discount)
+                context = {
+                    'coupon_price': voucher.discount,
+                    'cart_totalprice': str(cart_totalprice)
+                }
+                response = JsonResponse(context)
+                return response
+            else:
+                response = JsonResponse({"error": "Coupon can not use in this time"})
+                response.status_code = 403
+                return response
+        except:
+            response = JsonResponse({"error": "Coupon invalid"})
+            response.status_code = 403
+            return response

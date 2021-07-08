@@ -60,6 +60,8 @@ class Product(models.Model):
     status = models.CharField(max_length=10, choices=STATUS)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
+    have_discount = models.BooleanField(default=False)
+    discount_price = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -115,8 +117,20 @@ class CommentForm(ModelForm):
 
 
 class Promotion(models.Model):
-    code = models.CharField(max_length = 20)
     discount = models.BigIntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'discount ${self.discount} on {self.product.title} from {self.start_date} to {self.end_date}'
+
+
+class Voucher(models.Model):
+    code = models.CharField(unique=True, max_length = 20)
+    discount = models.BigIntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self) -> str:
+        return f'code: {self.code}--discount: {self.discount}'

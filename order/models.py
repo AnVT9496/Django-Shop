@@ -51,6 +51,7 @@ class Order(models.Model):
     adminnote = models.CharField(blank=True, max_length=100)
     create_at=models.DateTimeField(auto_now_add=True)
     update_at=models.DateTimeField(auto_now=True)
+    promotion = models.ForeignKey(Promotion, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.user.first_name

@@ -59,18 +59,24 @@
 									</tr>
 								{% endfor %} {% endcomment %}
 								{% for item in cart %}
-									{% with product=item.product%}
-										<tr class="product-item" data-index="{{product.id}}">
-											<td class="thumb"><img src="{{product.image.url}}" alt=""></td>
+									{% comment %} {% with product=item.product%} {% endcomment %}
+										<tr class="product-item" data-index="{{item.product_id}}">
+											<td class="thumb"><img src="{{item.product_image}}" alt=""></td>
 											<td class="details">
-												<a href="/product/{{ product.id }}/{{ product.slug }}">{{product}}</a>
+												<a href="/product/{{ item.product_id }}/{{ item.product_slug }}">{{item.product}}</a>
 											</td>
-											<td class="price text-center"><strong>${{product.price}}</strong>
+											<td class="price text-center"><strong>$
+												{% if item.product_havediscount %}
+													{{item.product_discount_price}}
+												{% else %}
+													{{item.product_price}}
+												{% endif %}
+											</strong></td>
 											<td class="qty text-center"><strong>{{item.quantity}}</strong> </td>
 											<td class="total text-center"><strong class="primary-color">${{item.total_price}}</strong></td>
-											<td class="text-right"><a data-index="{{product.id}}" href="#" class="delete-button main-btn icon-btn"><i class="fa fa-close"></i></a></td>
+											<td class="text-right"><a data-index="{{item.product_id}}" href="#" class="delete-button main-btn icon-btn"><i class="fa fa-close"></i></a></td>
 										</tr>
-									{% endwith %}
+									{% comment %} {% endwith %} {% endcomment %}
 								{% endfor %}
 								</tbody>
 								<tfoot>
@@ -78,6 +84,11 @@
 										<th class="empty" colspan="3"></th>
 										<th>SUBTOTAL</th>
 										<th id="subtotal" colspan="2" class="sub-total">${{cart.get_subtotal_price}}</th>
+									</tr>
+									<tr>
+										<th class="empty" colspan="3"></th>
+										<th>PROMOTION</th>
+										<td colspan="2" id="promotion-code">None</td>
 									</tr>
 									<tr>
 										<th class="empty" colspan="3"></th>
@@ -91,7 +102,16 @@
 									</tr>
 								</tfoot>
 							</table>
-							<div class="pull-right">
+							<form id="voucher-form" action="" method="POST" >
+							{% csrf_token %}
+							<div class="pull-right" style="border-right: 5px solid white;">
+								<input type="text" name="code" placeholder="Promo code" required>
+								<button type="submit" class="primary-btn">Add Promotion</button>
+							</div>
+							</form>
+							<br></br>
+							<br></br>
+							<div class="pull-right" style="border-left: 5px solid white;">
 								<a href="/order/orderdetail" class="primary-btn">Place Order</a>
 							</div>
 						</div>
@@ -105,6 +125,28 @@
 		<!-- /container -->
 	</div>
 	<!-- /section -->
+
+	<!-- invalidcoupon modal -->
+	<div style="height: 118px; background-color: black;" class=""></div>
+	<div class="modal fade" id="InvalidCouponModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Notification</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			Coupon invalid or out of date
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		</div>
+		</div>
+	</div>
+	</div>
+	<!-- Modal -->
 
 	<script>
 	//delete item
@@ -132,7 +174,7 @@
        document.getElementById("subtotal").innerHTML = subtotal;
        document.getElementById("total").innerHTML = total;
        document.getElementById("cart-count").innerHTML = json.quantity;
-	   document.getElementById("cart-price").innerHTML = subtotal;
+	   document.getElementById("cart-price").innerHTML = subtotal + '$';
 
       },
       error: function (xhr, errmsg, err) {
@@ -140,6 +182,32 @@
       },
     });
   });
+
+// redeem promotion code
+  $('#voucher-form').submit(function(e){
+    e.preventDefault()
+    var code = $(this).find("[name='code']").val()
+	const csrftoken = Cookies.get('csrftoken');
+    $.ajax({
+      type:'POST',
+      url : "{% url 'addcoupon' %}",
+      data :{
+        csrfmiddlewaretoken: csrftoken,
+        'code' : code,
+      },
+      success: function(json){
+		document.getElementById("promotion-code").innerHTML = '-$' + json.coupon_price;
+        document.getElementById("total").innerHTML = '$' + json.cart_totalprice;
+        //document.getElementById("coupon_price").innerHTML = json.coupon_price;
+      },
+      error: function (jqXHR, status) {
+		document.getElementById("promotion-code").innerHTML = 'None';
+        $("#InvalidCouponModal").modal();
+        console.log(jqXHR);
+
+    }
+    })
+  })
   </script>
 
 {% endblock %}

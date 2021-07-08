@@ -5,12 +5,26 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from  home.models import *
-from product.models import Category, Comment, Images, Product
+from product.models import Category, Comment, Images, Product, Promotion
 from order.models import ShopCart
 import json
+import datetime
 
 from home.forms import SearchForm
 # Create your views here.
+
+def check_havediscount(promotions, products):
+    for pr_newest in products:
+        pr_newest.have_discount = False
+        pr_newest.discount_price = None
+        pr_newest.save()
+        for promotion in promotions:
+            if promotion.product.id == pr_newest.id:
+                pr_newest.have_discount = True
+                pr_newest.discount_price = pr_newest.price - promotion.discount
+                pr_newest.save()
+
+
 def index(request):
 
     setting = Setting.objects.get(pk = 1)
@@ -19,12 +33,18 @@ def index(request):
     product_newest = Product.objects.all().order_by('-create_at') #sản phẩm mới nhất
     products_lasted = Product.objects.all() #last 4 product
     products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
+    promotions = Promotion.objects.filter(
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today()
+    )
+
+    check_havediscount(promotions, products_slider)
 
     current_user = request.user #access user session information
-    shopcart = ShopCart.objects.filter(user_id = current_user.id)
-    total = 0
-    for rs in shopcart:
-        total += rs.product.price * rs.quantity
+    # shopcart = ShopCart.objects.filter(user_id = current_user.id)
+    # total = 0
+    # for rs in shopcart:
+    #     total += rs.product.price * rs.quantity
 
     page = "home"
     context = {'setting': setting, 
@@ -34,7 +54,9 @@ def index(request):
                 'product_newest':product_newest,
                 'products_lasted':products_lasted,
                 'products_picked':products_picked,
-                'total':total}
+                # 'total':total,
+                'promotions': promotions
+                }
     return render(request, 'home/index.html', context)
 
 def aboutUs(request):
@@ -116,11 +138,25 @@ def product_detail(request, id, slug):
     category = Category.objects.all()
     product = Product.objects.get(pk=id)
     images = Images.objects.filter(product_id=id)
+    promotions = Promotion.objects.filter(
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today()
+    )
+
+    product.have_discount = False
+    product.discount_price = None
+    product.save()
+    for promotion in promotions:
+        if promotion.product.id == product.id:
+            product.have_discount = True
+            product.discount_price = product.price - promotion.discount
+            product.save()
     
     comments = Comment.objects.filter(product_id=id,status='True')
     context = {'product':product,
                 'category':category,
                 'images': images,
                 'comments':comments,
+                'promotions': promotions
                 }
     return render(request, 'home/product_detail.html', context)

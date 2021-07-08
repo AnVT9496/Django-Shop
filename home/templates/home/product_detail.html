@@ -74,12 +74,26 @@
 					</div>
 					<div class="col-md-6">
 						<div class="product-body">
-							<div class="product-label">
-								<span>New</span>
-								<span class="sale">-20%</span>
-							</div>
+							{% if product.have_discount %}
+								<div class="product-label">
+									<span>New</span>
+										{% for pr in promotions  %}
+											{% if pr.product.id == product.id %}										
+												<span class="sale">-${{pr.discount}}</span>
+											{% endif %}
+										{% endfor %}
+								</div>
+							{% endif %}
 							<h2 class="product-name">{{product.title}}</h2>
-							<h3 class="product-price">{{product.price}} <del class="product-old-price">$45.00</del></h3>
+							{% if product.have_discount %}
+								{% for pr in promotions  %}
+									{% if pr.product.id == product.id %}
+										<h3 class="product-price">${{product.discount_price}} <del class="product-old-price">${{product.price}}</del></h3>
+									{% endif %}
+								{% endfor %}
+							{% else %}
+								<h3 class="product-price">${{product.price}}</h3>
+							{% endif %}	
 							<div>
 								<div class="product-rating">
 									<i class="fa fa-star"></i>
@@ -247,7 +261,7 @@
         success: function(json){
           console.log(json)
           document.getElementById("cart-count").innerHTML = json.quantity;
-		  document.getElementById("cart-price").innerHTML = json.subtotal;
+		  document.getElementById("cart-price").innerHTML = json.subtotal + '$';
           $("#AddModal").modal();
 
         },

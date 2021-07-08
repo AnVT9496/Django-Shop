@@ -25,7 +25,10 @@ class Cart(object):
         if id in self.cart:
             self.cart[id]["quantity"] = quantity
         else:
-            self.cart[id] = {"price": str(product.price), "quantity": quantity}
+            if product.have_discount:
+                self.cart[id] = {"price": str(product.discount_price), "quantity": quantity}
+            else:
+                self.cart[id] = {"price": str(product.price), "quantity": quantity}
         self.save()
 
     def __iter__(self):
@@ -40,6 +43,12 @@ class Cart(object):
         for product in products:
             cart[str(product.id)]['product'] = product.title
             cart[str(product.id)]['product_id'] = product.id
+            cart[str(product.id)]['product_image'] = product.image.url
+            cart[str(product.id)]['product_slug'] = product.slug
+            cart[str(product.id)]['product_price'] = product.price
+            cart[str(product.id)]['product_havediscount'] = product.have_discount
+            cart[str(product.id)]['product_discount_price'] = product.discount_price
+            
 
         for item in cart.values():
             item['price'] = float(item['price'])
@@ -51,6 +60,15 @@ class Cart(object):
         Get the cart data and count the quantity of all products
         """
         return sum(item["quantity"] for item in self.cart.values())
+
+    def add_coupon(self,couponprice=0):
+        """
+        minus value of coupon when user add coupon, value = 0 if no coupon
+        """
+        subtotal = self.get_subtotal_price()
+
+        total = subtotal - float(couponprice)
+        return total
     
     def get_subtotal_price(self):
         """
@@ -63,8 +81,7 @@ class Cart(object):
         """
         get total price of total items in cart, include shipping and coupon value
         """
-        subtotal = sum(float(item['price']) * item['quantity'] 
-            for item in self.cart.values())
+        subtotal = self.get_subtotal_price()
         total = subtotal        
         return total
     
