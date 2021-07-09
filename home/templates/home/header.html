@@ -124,9 +124,9 @@
 									<i class="fa fa-shopping-cart"></i>
 									<span class="qty" id="cart-count">
 										{% with total_quantity=cart|length %}
-											{%if total_quantity > 0 %}
+											{% comment %} {%if total_quantity > 0 %} {% endcomment %}
                     							{{ total_quantity}}
-											{% endif %}
+											{% comment %} {% endif %} {% endcomment %}
 										{% endwith %}
 									</span>
 								</div>

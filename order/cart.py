@@ -74,7 +74,7 @@ class Cart(object):
         """
         return subtotal of items in cart
         """
-        return round(sum(Decimal(item['price'] * item['quantity'])
+        return round(sum(float(item['price']) * item['quantity']
             for item in self.cart.values()),2)
     
     def get_total_price(self):

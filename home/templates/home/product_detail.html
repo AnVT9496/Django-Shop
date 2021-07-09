@@ -145,7 +145,7 @@ a.del {
 							{% csrf_token %} {% endcomment %}
 								<div class="qty-input">
 									<span class="text-uppercase">QTY: </span>
-									<input id="quantity_input" class="input" name="quantity" type="number" value="1" min="1" max="{{product.amount}}">
+									<input id="quantity_input" class="input" name="quantity" type="number" min="1" max="{{product.amount}}" required>
 								</div>
 								<a href="#" id="add-cart-button" value="{{product.id}}" class="primary-btn add-to-cart {% if product.amount == 0 %}
 								disabled del

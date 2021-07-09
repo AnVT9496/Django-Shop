@@ -63,6 +63,11 @@ class Product(models.Model):
     update_at = models.DateTimeField(auto_now=True)
     have_discount = models.BooleanField(default=False)
     discount_price = models.FloatField(blank=True, null=True)
+    SEX = (
+        ('Male', 'Male'),
+        ('Frmale', 'Frmale'),
+    )
+    sex = models.CharField(max_length=10, choices=SEX, blank=True, null=True)
 
     def __str__(self):
         return self.title

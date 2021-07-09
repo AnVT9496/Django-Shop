@@ -35,7 +35,7 @@
                         <table class="shopping-cart-table table">
                             <tr>
                                 <th class="text-left">Id </th> 
-                                <th class="text-left"> Name </th>      
+                                <th class="text-left">Name</th>      
                                 <th class="text-left">Total </th>
                                 <th class="text-left">Status </th>
                                 <th class="text-left">Date </th>
@@ -45,7 +45,13 @@
                                 <tr>
                                     <td class="text-left">{{ rs.id}} </td>
                                     <td class="text-left">{{ rs.first_name}} {{ rs.last_name}}</td>
-                                    <td class="text-left">{{ rs.total}} </td>
+                                    <td class="text-left">
+									{% if rs.voucher %}
+										{{ rs.total_after_used_voucher}}
+									{% else %}
+										{{ rs.total}}
+									{% endif %}
+									</td>
                                     <td class="text-left">{{ rs.status}} </td>
                                     <td class="text-left">{{ rs.create_at}} </td>
                                     <td class="text-left"><a class="primary-btn" href="/user/order_detail/{{ rs.id }}"> Detail </a></td>
