@@ -11,6 +11,7 @@ from django.utils.crypto import get_random_string
 
 from user.models import *
 from product.models import Promotion, Voucher
+from product.utils import decrease_quantity_product
 
 from .cart import Cart
 
@@ -160,10 +161,18 @@ def orderdetail(request):
     category = Category.objects.all()
     current_user = request.user
     # shopcart = ShopCart.objects.filter(user_id=current_user.id)
+    session = request.session
     cart = Cart(request)
     # total = 0
     # for rs in shopcart:
     #     total += rs.product.price * rs.quantity
+
+    # take voucher from session
+    if 'voucher' not in request.session:
+        discount = None
+    else:
+        discount = session['voucher']['discount']
+        cart_totalprice = cart.add_coupon(discount)
 
     if request.method == 'POST':  # if there is a post
         form = OrderForm(request.POST)
@@ -180,6 +189,16 @@ def orderdetail(request):
             data.phone = form.cleaned_data['phone']
             data.user_id = current_user.id
             data.total = cart.get_total_price()
+            if 'voucher' not in request.session:
+                data.voucher = None
+                data.total_after_used_voucher = None
+            else:
+                discount = session['voucher']['discount']
+                code = session['voucher']['code']
+                voucher = Voucher.objects.get(code = code)
+                data.voucher = voucher
+                data.total_after_used_voucher = cart.add_coupon(discount)
+                
             data.ip = request.META.get('REMOTE_ADDR')
             ordercode= get_random_string(5).upper() # random cod
             data.code =  ordercode
@@ -213,11 +232,14 @@ def orderdetail(request):
 
     form= OrderForm()
     profile = UserProfile.objects.get(user_id=current_user.id)
+
     context = {'shopcart': cart,
                'category': category,
             #    'total': total,
                'form': form,
                'profile': profile,
+               'discount': discount,
+               'cart_totalprice': cart_totalprice
                }
     return render(request, 'order/order_form.html', context)
 
@@ -239,6 +261,16 @@ def add_coupon(request):
             voucher = Voucher.objects.get(code = code)
             if voucher.start_date <= datetime.date.today() <= voucher.end_date:
                 cart_totalprice = cart.add_coupon(voucher.discount)
+                if 'voucher' not in request.session:
+                    session['voucher'] = {
+                        'code': code,
+                        'discount': voucher.discount,
+                    }
+
+                else:
+                    session['voucher']['discount'] = voucher.discount
+                    session['voucher']['code'] = voucher.code
+                    session.modified = True
                 context = {
                     'coupon_price': voucher.discount,
                     'cart_totalprice': str(cart_totalprice)

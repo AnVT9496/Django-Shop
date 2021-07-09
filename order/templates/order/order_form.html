@@ -92,18 +92,23 @@
 								<tbody>
 								{% for rs in shopcart %}
 									<tr>
-										<td class="thumb"><img src="{{rs.product.image.url}}" alt=""></td>
+										<td class="thumb"><img src="{{rs.product_image}}" alt=""></td>
 										<td class="details">
-											<a href="/product/{{ rs.product.id }}/{{ rs.product.slug }}">{{rs.product}}</a>
+											<a href="/product/{{ rs.product_id }}/{{ rs.product_slug }}">{{rs.product}}</a>
 											{% comment %} <ul>
 												<li><span>Size: XL</span></li>
 												<li><span>Color: Camelot</span></li>
 											</ul> {% endcomment %}
 										</td>
-										<td class="price text-center"><strong>${{rs.product.price}}</strong>
+										<td class="price text-center"><strong>$
+											{% if item.product_havediscount %}
+												{{item.product_discount_price}}
+											{% else %}
+												{{item.product_price}}
+											{% endif %}</strong>
 										{% comment %} <br><del class="font-weak"><small>$40.00</small></del></td> {% endcomment %}
 										<td class="qty text-center"><strong>{{rs.quantity}}</strong> </td>
-										<td class="total text-center"><strong class="primary-color">${{rs.amount}}</strong></td>
+										<td class="total text-center"><strong class="primary-color">${{rs.total_price}}</strong></td>
 									</tr>
 								{% endfor %}
 								</tbody>
@@ -115,13 +120,29 @@
 									</tr>
 									<tr>
 										<th class="empty" colspan="3"></th>
+										<th>PROMOTION</th>
+										<td colspan="2" id="promotion-code">
+										{% if discount %}
+											-${{discount}}
+										{% else %}
+											None
+										{% endif %}
+										</td>
+									</tr>
+									<tr>
+										<th class="empty" colspan="3"></th>
 										<th>SHIPING</th>
 										<td colspan="2">Free Shipping</td>
 									</tr>
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>TOTAL</th>
-										<th colspan="2" class="total">${{shopcart.get_total_price}}</th>
+										<th colspan="2" class="total">$
+										{% if discount %}
+											{{cart_totalprice}}
+										{% else %}
+											{{shopcart.get_total_price}}
+										{% endif %}</th>
 									</tr>
 								</tfoot>
 							</table>

@@ -52,7 +52,7 @@ class Cart(object):
 
         for item in cart.values():
             item['price'] = float(item['price'])
-            item['total_price'] = item['price'] * item['quantity']
+            item['total_price'] = float(item['price'] * item['quantity'])
             yield item
 
     def __len__(self):
@@ -67,15 +67,15 @@ class Cart(object):
         """
         subtotal = self.get_subtotal_price()
 
-        total = subtotal - float(couponprice)
+        total = round((subtotal - couponprice),2)
         return total
     
     def get_subtotal_price(self):
         """
         return subtotal of items in cart
         """
-        return sum(float(item['price']) * item['quantity'] 
-            for item in self.cart.values())
+        return round(sum(Decimal(item['price'] * item['quantity'])
+            for item in self.cart.values()),2)
     
     def get_total_price(self):
         """

@@ -9,6 +9,7 @@ from product.models import Category, Comment, Images, Product, Promotion
 from order.models import ShopCart
 import json
 import datetime
+from decimal import Decimal
 
 from home.forms import SearchForm
 # Create your views here.
@@ -21,7 +22,7 @@ def check_havediscount(promotions, products):
         for promotion in promotions:
             if promotion.product.id == pr_newest.id:
                 pr_newest.have_discount = True
-                pr_newest.discount_price = pr_newest.price - promotion.discount
+                pr_newest.discount_price = round((pr_newest.price * (100 - promotion.discount) / 100) ,2)
                 pr_newest.save()
 
 
@@ -149,7 +150,7 @@ def product_detail(request, id, slug):
     for promotion in promotions:
         if promotion.product.id == product.id:
             product.have_discount = True
-            product.discount_price = product.price - promotion.discount
+            product.discount_price = round((product.price * (100 - promotion.discount) / 100), 2)
             product.save()
     
     comments = Comment.objects.filter(product_id=id,status='True')

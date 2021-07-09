@@ -1,5 +1,16 @@
     {% load static %}
 
+	<style>
+	a.disabled {
+		pointer-events: none;
+		color: white;
+		background-color: #ccc;
+	}
+	a.del {
+	text-decoration: line-through;
+	}
+	</style>
+
 	<!-- add modal -->
 	<div style="height: 118px; background-color: black;" class=""></div>
 	<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -96,13 +107,19 @@
 				<div class="col-md-3 col-sm-6 col-xs-6">
 					<div class="product product-single">
 						<div class="product-thumb">
-							{% for pr in promotions  %}
-								{% if pr.product.id == rs.id %}
+							{% if rs.amount == 0 %}
 								<div class="product-label">
-									<span class="sale">-${{pr.discount}}</span>
-								</div>
-								{% endif %}
-							{% endfor %}
+										<span class="sale">Out of stock</span>
+									</div>
+							{% else %}
+								{% for pr in promotions  %}
+									{% if pr.product.id == rs.id %}
+									<div class="product-label">
+										<span class="sale">-{{pr.discount}}%</span>
+									</div>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
 							<a href="/product/{{rs.id}}/{{rs.slug}}" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Quick view</a>
 							<img src="{{rs.image.url}}" alt="">
 						</div>
@@ -128,7 +145,10 @@
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
 								{% comment %} <a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a> {% endcomment %}
-								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart
+								{% if rs.amount == 0 %}
+									disabled del
+								{% endif %}"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -151,13 +171,19 @@
 				<div class="col-md-3 col-sm-6 col-xs-6">
 					<div class="product product-single">
 						<div class="product-thumb">
-							{% for pr in promotions  %}
-								{% if pr.product.id == rs.id %}
+							{% if rs.amount == 0 %}
 								<div class="product-label">
-									<span class="sale">-${{pr.discount}}</span>
-								</div>
-								{% endif %}
-							{% endfor %}
+										<span class="sale">Out of stock</span>
+									</div>
+							{% else %}
+								{% for pr in promotions  %}
+									{% if pr.product.id == rs.id %}
+									<div class="product-label">
+										<span class="sale">-{{pr.discount}}%</span>
+									</div>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
 							<a href="/product/{{rs.id}}/{{rs.slug}}" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Quick view</a>
 							<img src="{{rs.image.url}}" alt="">
 						</div>
@@ -170,7 +196,7 @@
 								{% endfor %}
 							{% else %}
 								<h3 class="product-price">${{rs.price}}</h3>
-							{% endif %}	
+							{% endif %}
 							<div class="product-rating">
 								<i class="fa fa-star"></i>
 								<i class="fa fa-star"></i>
@@ -183,7 +209,10 @@
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
 								{% comment %} <a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a> {% endcomment %}
-								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart
+								{% if rs.amount == 0 %}
+									disabled del
+								{% endif %}"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>
@@ -209,11 +238,32 @@
 				<div class="col-md-3 col-sm-6 col-xs-6">
 					<div class="product product-single">
 						<div class="product-thumb">
+							{% if rs.amount == 0 %}
+								<div class="product-label">
+										<span class="sale">Out of stock</span>
+									</div>
+							{% else %}
+								{% for pr in promotions  %}
+									{% if pr.product.id == rs.id %}
+									<div class="product-label">
+										<span class="sale">-{{pr.discount}}%</span>
+									</div>
+									{% endif %}
+								{% endfor %}
+							{% endif %}
 							<a href="/product/{{rs.id}}/{{rs.slug}}" class="main-btn quick-view"><i class="fa fa-search-plus"></i> Quick view</a>
 							<img src="{{rs.image.url}}" alt="">
 						</div>
 						<div class="product-body">
-							<h3 class="product-price">{{rs.price}}</h3>
+							{% if rs.have_discount %}
+								{% for pr in promotions  %}
+									{% if pr.product.id == rs.id %}
+										<h3 class="product-price">${{rs.discount_price}} <del class="product-old-price">${{rs.price}}</del></h3>
+									{% endif %}
+								{% endfor %}
+							{% else %}
+								<h3 class="product-price">${{rs.price}}</h3>
+							{% endif %}
 							<div class="product-rating">
 								<i class="fa fa-star"></i>
 								<i class="fa fa-star"></i>
@@ -226,7 +276,10 @@
 								<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 								<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
 								{% comment %} <a href="/order/addtoshopcart/{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a> {% endcomment %}
-								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								<a href="#" id="add-cart-button" value="{{rs.id}}" class="primary-btn add-to-cart
+								{% if rs.amount == 0 %}
+									disabled del
+								{% endif %}"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							</div>
 						</div>
 					</div>

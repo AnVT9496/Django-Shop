@@ -7,6 +7,7 @@ from mptt.models import MPTTModel
 from django.urls import reverse
 from django.forms import ModelForm, TextInput, Textarea, widgets
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 class Category(MPTTModel):
     STATUS = (
@@ -117,13 +118,17 @@ class CommentForm(ModelForm):
 
 
 class Promotion(models.Model):
-    discount = models.BigIntegerField()
+    discount = models.IntegerField(
+        validators=[
+            MaxValueValidator(100),
+            MinValueValidator(10)
+        ])
     start_date = models.DateField()
     end_date = models.DateField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'discount ${self.discount} on {self.product.title} from {self.start_date} to {self.end_date}'
+        return f'discount {self.discount}% on {self.product.title} from {self.start_date} to {self.end_date}'
 
 
 class Voucher(models.Model):
