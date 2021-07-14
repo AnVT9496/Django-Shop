@@ -56,7 +56,7 @@ class Order(models.Model):
     
 
     def __str__(self):
-        return self.user.first_name
+        return f"{self.id}-{self.user.first_name}"
 
 class OrderForm(ModelForm):
     class Meta:

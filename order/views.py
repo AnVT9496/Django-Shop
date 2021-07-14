@@ -153,7 +153,7 @@ def deletefromcart(request):
             'total': cart_totalprice
         }
         response = JsonResponse(context)
-    return response    
+    return response
 
 
 @login_required(login_url='login_form')
@@ -168,11 +168,14 @@ def orderdetail(request):
     #     total += rs.product.price * rs.quantity
 
     # take voucher from session
-    if 'voucher' not in request.session:
-        discount = None
+    if cart.voucher:
+        code = cart.voucher['voucher']['code']
+        discount = cart.voucher['voucher']['discount']
+        cart_totalprice = cart.add_coupon(code, discount)
     else:
-        discount = session['voucher']['discount']
-        cart_totalprice = cart.add_coupon(discount)
+        discount = None
+        cart_totalprice = None
+    
 
     if request.method == 'POST':  # if there is a post
         form = OrderForm(request.POST)
@@ -193,11 +196,11 @@ def orderdetail(request):
                 data.voucher = None
                 data.total_after_used_voucher = None
             else:
-                discount = session['voucher']['discount']
-                code = session['voucher']['code']
+                discount = cart.voucher['voucher']['discount']
+                code = cart.voucher['voucher']['code']
                 voucher = Voucher.objects.get(code = code)
                 data.voucher = voucher
-                data.total_after_used_voucher = cart.add_coupon(discount)
+                data.total_after_used_voucher = cart.add_coupon(code, discount)
                 
             data.ip = request.META.get('REMOTE_ADDR')
             ordercode= get_random_string(5).upper() # random cod
@@ -224,7 +227,8 @@ def orderdetail(request):
             # ShopCart.objects.filter(user_id=current_user.id).delete() # Clear & Delete shopcart
             # request.session['cart_items']=0
             cart.clear()
-            messages.success(request, "Your Order has been completed. Thank you ")
+            cart.clear_voucher()
+            # messages.success(request, "Your Order has been completed. Thank you ")
             return render(request, 'order/order_completed.html',{'ordercode':ordercode,'category': category})
         else:
             messages.warning(request, form.errors)
@@ -257,31 +261,47 @@ def add_coupon(request):
     session = request.session
     if request.method=="POST":
         code = request.POST.get('code')
-        try:    
-            voucher = Voucher.objects.get(code = code)
-            if voucher.start_date <= datetime.date.today() <= voucher.end_date:
-                cart_totalprice = cart.add_coupon(voucher.discount)
-                if 'voucher' not in request.session:
-                    session['voucher'] = {
-                        'code': code,
-                        'discount': voucher.discount,
-                    }
+        # try:    
+        voucher = Voucher.objects.get(code = code)
+        if voucher.start_date <= datetime.date.today() <= voucher.end_date:
+            cart_totalprice = cart.add_coupon(voucher.code, voucher.discount)
+            # if 'voucher' not in session:
+            #     session['voucher'] = {
+            #         'code': code,
+            #         'discount': voucher.discount,
+            #     }
 
-                else:
-                    session['voucher']['discount'] = voucher.discount
-                    session['voucher']['code'] = voucher.code
-                    session.modified = True
-                context = {
-                    'coupon_price': voucher.discount,
-                    'cart_totalprice': str(cart_totalprice)
-                }
-                response = JsonResponse(context)
-                return response
-            else:
-                response = JsonResponse({"error": "Coupon can not use in this time"})
-                response.status_code = 403
-                return response
-        except:
-            response = JsonResponse({"error": "Coupon invalid"})
-            response.status_code = 403
+            # else:
+            #     session['voucher']['discount'] = voucher.discount
+            #     session['voucher']['code'] = voucher.code
+            #     session.modified = True
+            context = {
+                'coupon_price': voucher.discount,
+                'cart_totalprice': str(cart_totalprice)
+            }
+            response = JsonResponse(context)
             return response
+        # else:
+        #     response = JsonResponse({"error": "Coupon can not use in this time"})
+        #     response.status_code = 403
+        #     return response
+        # except:
+        #     response = JsonResponse({"error": "Coupon invalid"})
+        #     response.status_code = 403
+        #     return response
+
+def remove_coupon(request):
+    cart = Cart(request)
+    try:
+        cart.clear_voucher()
+    except:
+        pass
+    get_voucher_value = cart.get_voucher_value()
+    get_total_price_after_user_voucher = cart.get_total_price_after_user_voucher()
+    context = {
+        'get_voucher_value' : str(get_voucher_value),
+        'get_total_price_after_user_voucher': get_total_price_after_user_voucher
+    }
+    response = JsonResponse(context)
+    return response
+    

@@ -13,9 +13,16 @@ class Cart(object):
     def __init__(self, request):
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
+        voucher = self.session.get(settings.VOUCHER_SESSION_ID)
+
         if settings.CART_SESSION_ID not in request.session:
             cart = self.session[settings.CART_SESSION_ID] = {}
+
+        if settings.VOUCHER_SESSION_ID not in request.session:
+            voucher = self.session[settings.VOUCHER_SESSION_ID] = {}
+
         self.cart = cart
+        self.voucher = voucher
 
     def add(self, product, quantity):
         """
@@ -61,28 +68,67 @@ class Cart(object):
         """
         return sum(item["quantity"] for item in self.cart.values())
 
-    def add_coupon(self,couponprice=0):
+    def add_coupon_to_session(self, code, discount):
+        """
+        add coupon to session
+        """
+        if not self.voucher:
+            self.voucher["voucher"] = {
+                    "code": code,
+                    "discount": discount
+            }
+            self.save()
+        if 'voucher' in self.voucher:
+            self.voucher["voucher"]["code"] = code
+            self.voucher["voucher"]["discount"] = discount
+            self.save()
+
+    def add_coupon(self, code=None, discount=0):
         """
         minus value of coupon when user add coupon, value = 0 if no coupon
         """
         subtotal = self.get_subtotal_price()
+        
+        self.add_coupon_to_session(code, discount)
 
-        total = round((subtotal - couponprice),2)
+        total = round((subtotal * 0.01*(100 - discount)),2)
+
+        self.voucher["voucher"]["total_after_used_voucher"] = total
+        self.save()
+
         return total
+
+    def get_voucher_value(self):
+        if self.voucher:
+            return f"-{self.voucher['voucher']['discount']}%"
+        else:
+            return None
+
+    def get_total_price_after_user_voucher(self):
+        if self.voucher:
+            if self.cart:
+                return self.voucher['voucher']['total_after_used_voucher']
+            else:
+                return 0
+        else:
+            return self.get_total_price()
     
     def get_subtotal_price(self):
         """
         return subtotal of items in cart
         """
-        return round(sum(float(item['price']) * item['quantity']
-            for item in self.cart.values()),2)
+        if self.cart:
+            return round(sum(float(item['price']) * item['quantity']
+                for item in self.cart.values()),2)
+        else:
+            return 0
     
     def get_total_price(self):
         """
         get total price of total items in cart, include shipping and coupon value
         """
         subtotal = self.get_subtotal_price()
-        total = subtotal        
+        total = subtotal
         return total
     
     def delete(self, product_id):
@@ -108,6 +154,15 @@ class Cart(object):
         Remove cart from session
         """
         del self.session[settings.CART_SESSION_ID]
+
+        self.save()
+
+    def clear_voucher(self):
+        """
+        Remove voucher from session
+        """
+        del self.voucher["voucher"]
+        del self.session[settings.VOUCHER_SESSION_ID]
 
         self.save()
 

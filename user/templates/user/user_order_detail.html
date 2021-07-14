@@ -76,6 +76,7 @@
                         </div>
 
                         <table class="shopping-cart-table table">
+                            <thead>
                             <tr>
                                 <th class="text-left"></th>
                                 <th class="text-left">Product Name </th>
@@ -85,23 +86,50 @@
                                 <th class="text-left">Status </th>
                                 <th class="text-left">Date </th>
                             </tr>
-                            {% for rs in orderDetails %}
-                                <tr>
-                                    <td class="text-left">
-                                        <a href="/product/{{ rs.product_id }}/{{ rs.product.slug }}">
-                                                <img src="{{rs.product.image.url}}" alt="" style="height: 50px">
-                                        </a>
-                                    </td>
-                                    <td class="text-left">{{ rs.product.title}}</td>
-                                    <td class="text-left">{{ rs.price}} </td>
-                                    <td class="text-left">{{ rs.quantity}} </td>
-                                    <td class="text-left">{{ rs.amount}} </td>
-                                    <td class="text-left">{{ rs.status}} </td>
-                                    <td class="text-left">{{ rs.create_at}} </td>
-                                </tr>
-                            {% endfor %}
+                            </thead>
+                            <tbody>
+                                {% for rs in orderDetails %}
+                                    <tr>
+                                        <td class="text-left">
+                                            <a href="/product/{{ rs.product_id }}/{{ rs.product.slug }}">
+                                                    <img src="{{rs.product.image.url}}" alt="" style="height: 50px">
+                                            </a>
+                                        </td>
+                                        <td class="text-left">{{ rs.product.title}}</td>
+                                        <td class="text-left">{{ rs.price}} </td>
+                                        <td class="text-left">{{ rs.quantity}} </td>
+                                        <td class="text-left">{{ rs.amount}} </td>
+                                        <td class="text-left">{{ rs.status}} </td>
+                                        <td class="text-left">{{ rs.create_at}} </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
 
+                            <tfoot>
+                                <tr>
+                                    <th class="empty" colspan="4"></th>
+                                    <th>SUBTOTAL</th>
+                                    <th id="subtotal" colspan="2" class="sub-total">${{cart.get_subtotal_price}}</th>
+                                </tr>
+                                <tr>
+                                    <th class="empty" colspan="4"></th>
+                                    <th>PROMOTION</th>
+                                    <td colspan="2" id="promotion-code">{{cart.get_voucher_value}}</td>
+                                </tr>
+                                <tr>
+                                    <th class="empty" colspan="4"></th>
+                                    <th>SHIPING</th>
+                                    <td colspan="2">Free Shipping</td>
+                                </tr>
+                                <tr>
+                                    <th class="empty" colspan="4"></th>
+                                    <th>TOTAL</th>
+                                    <th id="total" colspan="2" class="total">${{cart.get_total_price_after_user_voucher}}</th>
+                                </tr>
+                            </tfoot>
+                            
                         </table>
+                        
 						</div>
 
 					</div>
