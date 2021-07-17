@@ -145,11 +145,13 @@ a.del {
 							{% csrf_token %} {% endcomment %}
 								<div class="qty-input">
 									<span class="text-uppercase">QTY: </span>
-									<input id="quantity_input" class="input" name="quantity" type="number" min="1" max="{{product.amount}}" required>
+									<input id="quantity_input" class="input" name="quantity" type="number" min="1" max="{{product.amount}}" placeholder="Qty">
 								</div>
-								<a href="#" id="add-cart-button" value="{{product.id}}" class="primary-btn add-to-cart {% if product.amount == 0 %}
-								disabled del
-								{% endif %}"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+								<a href="#" id="add-cart-button" value="{{product.id}}" class="primary-btn add-to-cart 
+								{% if product.amount == 0 %}
+									disabled del
+								{% endif %}">
+								<i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							{% comment %} </form>	 {% endcomment %}
 								
 								<div class="pull-right">

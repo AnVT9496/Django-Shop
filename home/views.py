@@ -88,13 +88,13 @@ def contact(request):
 
 
 def category_products(request, id, slug):
-    shopcart = ShopCart.objects.all()
+    # shopcart = ShopCart.objects.all()
 
     category = Category.objects.all()
     products = Product.objects.filter(category_id=id)
     context = {'products':products,
                 'category':category,
-                'shopcart':shopcart
+                # 'shopcart':shopcart
                 }
     return render(request, 'home/category_products.html', context)
 
