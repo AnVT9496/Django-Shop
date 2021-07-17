@@ -101,10 +101,10 @@
 											</ul> {% endcomment %}
 										</td>
 										<td class="price text-center"><strong>$
-											{% if item.product_havediscount %}
-												{{item.product_discount_price}}
+											{% if rs.product_havediscount %}
+												{{rs.product_discount_price}}
 											{% else %}
-												{{item.product_price}}
+												{{rs.product_price}}
 											{% endif %}</strong>
 										{% comment %} <br><del class="font-weak"><small>$40.00</small></del></td> {% endcomment %}
 										<td class="qty text-center"><strong>{{rs.quantity}}</strong> </td>
