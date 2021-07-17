@@ -192,15 +192,18 @@ def orderdetail(request):
             data.phone = form.cleaned_data['phone']
             data.user_id = current_user.id
             data.total = cart.get_total_price()
-            if 'voucher' not in request.session:
-                data.voucher = None
-                data.total_after_used_voucher = None
-            else:
-                discount = cart.voucher['voucher']['discount']
-                code = cart.voucher['voucher']['code']
-                voucher = Voucher.objects.get(code = code)
-                data.voucher = voucher
-                data.total_after_used_voucher = cart.add_coupon(code, discount)
+            data.voucher = cart.get_voucher_code()
+            data.total_after_used_voucher = cart.get_total_price_after_user_voucher()
+
+            # if 'voucher' not in request.session:
+            #     data.voucher = None
+            #     data.total_after_used_voucher = None
+            # else:
+            #     discount = cart.voucher['voucher']['discount']
+            #     code = cart.voucher['voucher']['code']
+            #     voucher = Voucher.objects.get(code = code)
+            #     data.voucher = voucher
+            #     data.total_after_used_voucher = cart.add_coupon(code, discount)
                 
             data.ip = request.META.get('REMOTE_ADDR')
             ordercode= get_random_string(5).upper() # random cod
@@ -227,7 +230,10 @@ def orderdetail(request):
             # ShopCart.objects.filter(user_id=current_user.id).delete() # Clear & Delete shopcart
             # request.session['cart_items']=0
             cart.clear()
-            cart.clear_voucher()
+            try:
+                cart.clear_voucher()
+            except:
+                pass
             # messages.success(request, "Your Order has been completed. Thank you ")
             return render(request, 'order/order_completed.html',{'ordercode':ordercode,'category': category})
         else:

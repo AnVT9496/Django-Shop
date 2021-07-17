@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.conf import settings
 from functools import wraps
 
-from product.models import Product
+from product.models import Product, Voucher
 
 
 class Cart(object):
@@ -101,6 +101,14 @@ class Cart(object):
     def get_voucher_value(self):
         if self.voucher:
             return f"-{self.voucher['voucher']['discount']}%"
+        else:
+            return None
+
+    def get_voucher_code(self):
+        if self.voucher:
+            code = self.voucher['voucher']['code']
+            voucher = Voucher.objects.get(code = code)
+            return voucher
         else:
             return None
 

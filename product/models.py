@@ -55,7 +55,7 @@ class Product(models.Model):
     image = models.ImageField(blank=True, upload_to = 'images/', null= False)
     price = models.FloatField()
     amount = models.IntegerField()
-    min_amount = models.IntegerField()
+    # min_amount = models.IntegerField()
     detail = RichTextUploadingField()
     slug = models.SlugField(null=False, unique=True)
     status = models.CharField(max_length=10, choices=STATUS)

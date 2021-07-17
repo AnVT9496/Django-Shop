@@ -8,6 +8,17 @@
 
 {% block body %}
 
+	<style>
+	a.disabled {
+		pointer-events: none;
+		color: white;
+		background-color: #ccc;
+	}
+	a.del {
+	text-decoration: line-through;
+	}
+	</style>
+
 	<!-- BREADCRUMB -->
 	<div id="breadcrumb">
 		<div class="container">
@@ -113,7 +124,10 @@
 							<br></br>
 							<br></br>
 							<div class="pull-right" style="border-left: 5px solid white;">
-								<a href="/order/orderdetail" class="primary-btn">Place Order</a>
+								<a href="/order/orderdetail" id="placeorder_button" class="primary-btn
+								{% if cart|length == 0 %}
+									disabled del
+								{% endif %}">Place Order</a>
 							</div>
 						</div>
 
@@ -168,6 +182,7 @@
        if (json.quantity == 0){          
            total = 0
            subtotal = 0
+		   $('#placeorder_button').addClass('disabled del');
        } else {
            subtotal = json.subtotal,
            total = json.total
@@ -197,7 +212,7 @@
         'code' : code,
       },
       success: function(json){
-		document.getElementById("promotion-code").innerHTML = '-$' + json.coupon_price;
+		document.getElementById("promotion-code").innerHTML = '-' + json.coupon_price +'%';
         document.getElementById("total").innerHTML = '$' + json.cart_totalprice;
         document.getElementById("cart-price").innerHTML = json.cart_totalprice + '$';
       },

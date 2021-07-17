@@ -78,13 +78,13 @@
                         <table class="shopping-cart-table table">
                             <thead>
                             <tr>
-                                <th class="text-left"></th>
-                                <th class="text-left">Product Name </th>
-                                <th class="text-left">Price </th>
-                                <th class="text-left">Quantity </th>
-                                <th class="text-left">Amount </th>
-                                <th class="text-left">Status </th>
-                                <th class="text-left">Date </th>
+                                <th class="text-center"></th>
+                                <th class="text-center">Product Name </th>
+                                <th class="text-center">Price </th>
+                                <th class="text-center">Quantity </th>
+                                <th class="text-center">Amount </th>
+                                <th class="text-center">Status </th>
+                                <th class="text-center">Date </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -109,12 +109,12 @@
                                 <tr>
                                     <th class="empty" colspan="4"></th>
                                     <th>SUBTOTAL</th>
-                                    <th id="subtotal" colspan="2" class="sub-total">${{cart.get_subtotal_price}}</th>
+                                    <th id="subtotal" colspan="2" class="sub-total">${{order.total}}</th>
                                 </tr>
                                 <tr>
                                     <th class="empty" colspan="4"></th>
                                     <th>PROMOTION</th>
-                                    <td colspan="2" id="promotion-code">{{cart.get_voucher_value}}</td>
+                                    <td colspan="2" id="promotion-code">-{{order.voucher.discount}}%</td>
                                 </tr>
                                 <tr>
                                     <th class="empty" colspan="4"></th>
@@ -124,7 +124,7 @@
                                 <tr>
                                     <th class="empty" colspan="4"></th>
                                     <th>TOTAL</th>
-                                    <th id="total" colspan="2" class="total">${{cart.get_total_price_after_user_voucher}}</th>
+                                    <th id="total" colspan="2" class="total">${{order.total_after_used_voucher}}</th>
                                 </tr>
                             </tfoot>
                             
