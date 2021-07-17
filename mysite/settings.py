@@ -152,3 +152,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cart session ID
 CART_SESSION_ID = "mysite"
+VOUCHER_SESSION_ID = 'voucher'

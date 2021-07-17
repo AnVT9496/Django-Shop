@@ -88,7 +88,7 @@
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>PROMOTION</th>
-										<td colspan="2" id="promotion-code">None</td>
+										<td colspan="2" id="promotion-code">{{cart.get_voucher_value}}</td>
 									</tr>
 									<tr>
 										<th class="empty" colspan="3"></th>
@@ -98,15 +98,16 @@
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>TOTAL</th>
-										<th id="total" colspan="2" class="total">${{cart.get_total_price}}</th>
+										<th id="total" colspan="2" class="total">${{cart.get_total_price_after_user_voucher}}</th>
 									</tr>
 								</tfoot>
 							</table>
 							<form id="voucher-form" action="" method="POST" >
 							{% csrf_token %}
 							<div class="pull-right" style="border-right: 5px solid white;">
-								<input type="text" name="code" placeholder="Promo code" required>
-								<button type="submit" class="primary-btn">Add Promotion</button>
+								<input id='inputcoupon' type="text" name="code" placeholder="Promo code" required>
+								<a id= 'addcoupon' class="primary-btn">Add Promotion</a>
+								<a id= 'removecoupon' href="{% url 'removecoupon' %}" class="primary-btn">Clear</a>
 							</div>
 							</form>
 							<br></br>
@@ -184,9 +185,9 @@
   });
 
 // redeem promotion code
-  $('#voucher-form').submit(function(e){
+  $(document).on("click", '#addcoupon', function (e) {
     e.preventDefault()
-    var code = $(this).find("[name='code']").val()
+    var code = document.getElementById("inputcoupon").value
 	const csrftoken = Cookies.get('csrftoken');
     $.ajax({
       type:'POST',
@@ -198,11 +199,33 @@
       success: function(json){
 		document.getElementById("promotion-code").innerHTML = '-$' + json.coupon_price;
         document.getElementById("total").innerHTML = '$' + json.cart_totalprice;
-        //document.getElementById("coupon_price").innerHTML = json.coupon_price;
+        document.getElementById("cart-price").innerHTML = json.cart_totalprice + '$';
       },
       error: function (jqXHR, status) {
 		document.getElementById("promotion-code").innerHTML = 'None';
         $("#InvalidCouponModal").modal();
+        console.log(jqXHR);
+
+    }
+    })
+  })
+
+// remove coupon
+  $(document).on("click", '#removecoupon', function (e) {
+    e.preventDefault()
+	const csrftoken = Cookies.get('csrftoken');
+    $.ajax({
+      type:'POST',
+      url : "{% url 'removecoupon' %}",
+      data :{
+        csrfmiddlewaretoken: csrftoken,
+      },
+      success: function(json){
+		document.getElementById("promotion-code").innerHTML = json.get_voucher_value;
+        document.getElementById("total").innerHTML = '$' + json.get_total_price_after_user_voucher;
+		document.getElementById("cart-price").innerHTML = json.get_total_price_after_user_voucher + '$';
+      },
+      error: function (jqXHR, status) {
         console.log(jqXHR);
 
     }

@@ -138,7 +138,11 @@ class Promotion(models.Model):
 
 class Voucher(models.Model):
     code = models.CharField(unique=True, max_length = 20)
-    discount = models.BigIntegerField()
+    discount = models.IntegerField(
+        validators=[
+            MaxValueValidator(100),
+            MinValueValidator(10)
+        ])
     start_date = models.DateField()
     end_date = models.DateField()
 
