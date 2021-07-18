@@ -81,8 +81,28 @@
 
 					<!-- aside widget -->
 					<div class="aside">
-						<h3 class="aside-title">Filter by Price</h3>
-						<div id="price-slider"></div>
+						<h3 class="aside-title">Price</h3>
+						{% comment %} <div id="price-slider"></div> {% endcomment %}
+						<form id="filter" action="{% url 'home:category_products' id_category slug %}" method="post">
+							{% csrf_token %}
+							{% for price, value in range_of_price.items %}
+								<input type="radio" name="price" value="{{ value }}" onchange='this.form.submit();'
+								{% if price_checked == price %}
+									checked="checked">
+								{% endif %}
+								<label for="price1"> {{price}}</label><br>
+							{% endfor %}
+
+							<h3 class="aside-title">Gender</h3>
+							{% for gender, value in allgender.items %}
+								<input type="radio" name="gender" value="{{ value }}" onchange='this.form.submit();'
+								{% if gender_checked == gender %}
+									checked="checked">
+								{% endif %} 
+								<label > {{gender}}</label><br>
+							{% endfor %}
+						</form>
+						
 					</div>
 					<!-- aside widget -->
 
@@ -120,16 +140,6 @@
 							<li><a href="#">Adidas</a></li>
 							<li><a href="#">Polo</a></li>
 							<li><a href="#">Lacost</a></li>
-						</ul>
-					</div>
-					<!-- /aside widget -->
-
-					<!-- aside widget -->
-					<div class="aside">
-						<h3 class="aside-title">Filter by Gender</h3>
-						<ul class="list-links">
-							<li class="active"><a href="#">Men</a></li>
-							<li><a href="#">Women</a></li>
 						</ul>
 					</div>
 					<!-- /aside widget -->
@@ -322,6 +332,7 @@
 	<!-- /section -->
 
 	<script>
+	// add to cart
     $(document).on('click','#add-cart-button', function(e){
       e.preventDefault();
       const id =$('#add-cart-button').attr('value');

@@ -65,7 +65,7 @@ class Product(models.Model):
     discount_price = models.FloatField(blank=True, null=True)
     SEX = (
         ('Male', 'Male'),
-        ('Frmale', 'Frmale'),
+        ('Female', 'Female'),
     )
     sex = models.CharField(max_length=10, choices=SEX, blank=True, null=True)
 

@@ -1,6 +1,6 @@
 from order.views import shopcart
 from home.models import Setting
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
@@ -89,11 +89,56 @@ def contact(request):
 
 def category_products(request, id, slug):
     # shopcart = ShopCart.objects.all()
+    range_of_price = {
+        "Under $10": 1,
+        "From $10-$20": 2,
+        "Above $20": 3,
+        "All": 4
+    }
+
+    allgender = {
+        "Men": 'men',
+        "Women": 'women',
+        "All": 'all'
+    }
+
+    price = request.POST.get("price", None)
+    gender = request.POST.get("gender", None)
 
     category = Category.objects.all()
     products = Product.objects.filter(category_id=id)
+    price_checked = 'All'
+    gender_checked = 'All'
+
+    #Filter product by price
+    if price:
+        if price == '1':
+            products = products.filter(price__lte=10)
+            price_checked = 'Under $10'
+        elif price == '2':
+            products = products.filter(price__gt=10).filter(price__lt=20)
+            price_checked = 'From $10-$20'
+        elif price == '3':
+            products = products.filter(price__gte=20)
+            price_checked = 'Above $20'
+    
+    if gender:
+        if gender == 'men':
+            products = products.filter(sex='Male')
+            gender_checked = 'Men'
+        elif gender == 'women':
+            products = products.filter(sex='Female')
+            gender_checked = 'Women'
+
     context = {'products':products,
                 'category':category,
+                'range_of_price': range_of_price,
+                'price_checked': price_checked,
+                'allgender': allgender,
+                'gender_checked': gender_checked,
+                'id_category': id,
+                'slug': slug,
+                
                 # 'shopcart':shopcart
                 }
     return render(request, 'home/category_products.html', context)
