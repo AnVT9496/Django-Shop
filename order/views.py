@@ -223,8 +223,7 @@ def orderdetail(request):
                 detail.save()
                 # ***Reduce quantity of sold product from Amount of Product
                 product = Product.objects.get(id=rs['product_id'])
-                product.amount -= rs['quantity']
-                product.save()
+                decrease_quantity_product(product, rs['quantity'])
                 #-----------------------
 
             # ShopCart.objects.filter(user_id=current_user.id).delete() # Clear & Delete shopcart

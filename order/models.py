@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import *
+from .constants import *
 
 
 from product.models import *
@@ -59,6 +60,9 @@ class Order(models.Model):
         return f"{self.id}-{self.user.first_name}"
 
 class OrderForm(ModelForm):
+    phone = CharField(validators=[PHONE_NUMBER_REGEX],widget=TextInput(attrs={'class':'form-control', 'autocomplete':'off'}), required=True)
+    address = CharField(required=True)
+
     class Meta:
         model = Order   
         fields = ['first_name','last_name','address','phone','city','country']

@@ -27,7 +27,7 @@ urlpatterns = [
 
     #home
     path('', include('home.urls')),
-    # path('home/', include('home.urls')),
+    path('home/', include('home.urls')),
 
     #product
     path('product/', include('product.urls')),
