@@ -74,7 +74,7 @@ def signup_form(request):
     return render(request, 'user/signup_form.html', context)
 
 
-@persist_session_vars([settings.CART_SESSION_ID])
+@persist_session_vars([settings.CART_SESSION_ID, settings.VOUCHER_SESSION_ID])
 def logout_func(request):
     logout(request)
     return HttpResponseRedirect('/')
