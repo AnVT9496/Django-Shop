@@ -86,3 +86,10 @@ class OrderDetail(models.Model):
 
     def __str__(self):
         return self.product.title
+
+
+
+class SalesReport(Order):
+    class Meta:
+        proxy = True
+
