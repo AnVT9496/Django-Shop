@@ -31,11 +31,19 @@ class Cart(object):
         id = str(product.id) 
         if id in self.cart:
             self.cart[id]["quantity"] = quantity
+
         else:
             if product.have_discount:
-                self.cart[id] = {"price": str(product.discount_price), "quantity": quantity}
+                self.cart[id] = {
+                    "price": str(product.discount_price),
+                    "quantity": quantity
+                }
             else:
-                self.cart[id] = {"price": str(product.price), "quantity": quantity}
+                self.cart[id] = {
+                    "price": str(product.price),
+                    "quantity": quantity
+                }
+  
         self.save()
 
     def __iter__(self):
@@ -55,6 +63,7 @@ class Cart(object):
             cart[str(product.id)]['product_price'] = product.price
             cart[str(product.id)]['product_havediscount'] = product.have_discount
             cart[str(product.id)]['product_discount_price'] = product.discount_price
+            cart[str(product.id)]['product_quantity_available'] = product.amount
             
 
         for item in cart.values():
