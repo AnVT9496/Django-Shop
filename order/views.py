@@ -115,8 +115,8 @@ def shopcart(request):
     category = Category.objects.all()
     cart = Cart(request)
     context = {
-        "cart": cart,
-        'category':category,
+        'cart': cart,
+        'category': category
     }
     return render(request,'order/shopcart_products.html', context)
 

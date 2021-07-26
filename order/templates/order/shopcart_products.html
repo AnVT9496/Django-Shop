@@ -14,7 +14,7 @@
 		color: white;
 		background-color: #ccc;
 	}
-	a.del {
+	.del {
 	text-decoration: line-through;
 	}
 	</style>
@@ -34,7 +34,7 @@
 		<!-- container -->
 		<div class="container">
 			<!-- row -->
-			<div class="row">
+			<div id='table-cart' class="row">
 					<div class="col-md-12">
 						<div class="order-summary clearfix">
 							<div class="section-title">
@@ -71,7 +71,11 @@
 								{% endfor %} {% endcomment %}
 								{% for item in cart %}
 									{% comment %} {% with product=item.product%} {% endcomment %}
-										<tr class="product-item" data-index="{{item.product_id}}">
+										<tr class="product-item
+										{% if item.product_quantity_available < item.quantity %}
+										del
+										{% endif %}
+										" data-index="{{item.product_id}}">
 											<td class="thumb"><img src="{{item.product_image}}" alt=""></td>
 											<td class="details">
 												<a href="/product/{{ item.product_id }}/{{ item.product_slug }}">{{item.product}}</a>
@@ -86,6 +90,7 @@
 											<td class="qty text-center"><strong>{{item.quantity}}</strong> </td>
 											<td class="total text-center"><strong class="primary-color">${{item.total_price}}</strong></td>
 											<td class="text-right"><a data-index="{{item.product_id}}" href="#" class="delete-button main-btn icon-btn"><i class="fa fa-close"></i></a></td>
+											<td class="text-center">{{ item.product_quantity_available}}</td>
 										</tr>
 									{% comment %} {% endwith %} {% endcomment %}
 								{% endfor %}
@@ -125,6 +130,11 @@
 							<br></br>
 							<div class="pull-right" style="border-left: 5px solid white;">
 								<a href="/order/orderdetail" id="placeorder_button" class="primary-btn
+								{% for item in cart %}
+									{% if item.product_quantity_available < item.quantity %}
+										disabled del
+									{% endif %}
+								{% endfor %}
 								{% if cart|length == 0 %}
 									disabled del
 								{% endif %}">Place Order</a>
@@ -187,11 +197,11 @@
            subtotal = json.subtotal,
            total = json.total
        }
-       document.getElementById("subtotal").innerHTML = subtotal;
-       document.getElementById("total").innerHTML = total;
+       //document.getElementById("subtotal").innerHTML = subtotal;
+       //document.getElementById("total").innerHTML = total;
        document.getElementById("cart-count").innerHTML = json.quantity;
 	   document.getElementById("cart-price").innerHTML = subtotal + '$';
-
+	   $('#table-cart').load(' #table-cart');
       },
       error: function (xhr, errmsg, err) {
         console.log(xhr)
