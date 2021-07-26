@@ -209,3 +209,4 @@ class persist_session_vars(object):
             return response
 
         return inner
+    
