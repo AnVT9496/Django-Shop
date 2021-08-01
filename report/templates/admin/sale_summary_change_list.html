@@ -61,12 +61,12 @@
 
     <tr style="font-weight:bold; border-top:2px solid #DDDDDD;">
             <td> Total </td>
-            <td> {{ summary_total.total}} </td>
+            <td> {{ summary_total.total | floatformat}} $</td>
             <td>
             {% if summary_total.total_after_used_voucher %}
                 {{ summary_total.total_after_used_voucher | floatformat }}
             {% else %}
-                {{ summary_total.total }} 
+                {{ summary_total.total | floatformat }} 
             {% endif %}
             $</td>
     </tr>
