@@ -28,6 +28,11 @@
         </th>
         <th>
           <div class="text">
+            <a href="#">Day</a>
+          </div>
+        </th>
+        <th>
+          <div class="text">
             <a href="#">Status</a>
           </div>
         </th>
@@ -41,12 +46,13 @@
             <td> {{ row.first_name }} </td>
             <td> {{ row.total }} </td>
             <td> 
-            {% if row.total_after_used_voucher %}
+            {% comment %} {% if row.total_after_used_voucher %} {% endcomment %}
                 {{ row.total_after_used_voucher }}
-            {% else %}
+            {% comment %} {% else %}
                 {{ row.total }} 
-            {% endif %}
+            {% endif %} {% endcomment %}
             </td>
+            <td> {{ row.create_at }} </td>
             <td> {{ row.status }} </td>
         </tr>
         {% comment %} {% endif %} {% endcomment %}
