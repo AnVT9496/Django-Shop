@@ -77,7 +77,7 @@ def signup_form(request):
 @persist_session_vars([settings.CART_SESSION_ID, settings.VOUCHER_SESSION_ID])
 def logout_func(request):
     logout(request)
-    return HttpResponseRedirect('/home')
+    return HttpResponseRedirect('/')
 
 def user_update(request):
     if request.method == 'POST':

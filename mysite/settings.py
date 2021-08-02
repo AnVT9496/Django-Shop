@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'user',
     'ckeditor',
     'mptt',
+    'rangefilter',
+    'report',
 ]
 
 MIDDLEWARE = [

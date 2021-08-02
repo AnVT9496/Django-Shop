@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.db.models import Count, Sum
+from django.contrib.admin import DateFieldListFilter
+
 # Register your models here.
 from order.models import *
 
@@ -17,49 +18,14 @@ class OrderDetailline(admin.TabularInline):
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id','first_name', 'last_name','phone','city','total','status']
-    list_filter = ['status']
-    readonly_fields = ('user','address','city','country','phone','first_name','ip', 'last_name','phone','city','total','voucher', 'total_after_used_voucher')
+    list_filter = ['status',]
+    readonly_fields = ('user','address','city','country','phone','first_name','ip', 'last_name','phone','city','total','voucher', 'total_after_used_voucher','create_at')
     can_delete = False
     inlines = [OrderDetailline]
 
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ['user', 'product','price','quantity','amount']
     list_filter = ['user']
-
-
-@admin.register(SalesReport)
-class ReportAdmin(admin.ModelAdmin):
-    change_list_template = 'admin/sale_summary_change_list.html'
-    list_filter = ['status']
-    date_hierarchy = 'create_at'
-
-    def changelist_view(self, request, extra_context=None):
-        response = super().changelist_view(
-            request,
-            extra_context=extra_context,
-        )
-
-        try:
-            qs = response.context_data['cl'].queryset
-        except (AttributeError, KeyError):
-            return response
-
-        metrics = {
-            'total': Sum('total'),
-            'total_after_used_voucher': Sum('total_after_used_voucher'),
-        }
-
-        response.context_data['summary'] = list(
-            qs
-            .values('first_name', 'status')
-            .annotate(**metrics)
-        )
-
-        response.context_data['summary_total'] = dict(
-            qs.aggregate(**metrics)
-        )
-
-        return response
 
     
 admin.site.register(ShopCart, ShopCartAdmin)
