@@ -170,7 +170,7 @@ def export_invoice(request, id):
     shipping_fee = None
     category = Category.objects.all()
     current_user = request.user
-    order = Order.objects.get(user_id = current_user.id, id=id)
+    order = Order.objects.get(id=id)
     orderDetails = OrderDetail.objects.filter(order_id=id)
     # Set template to export
     template_path = 'user/invoice.html'
