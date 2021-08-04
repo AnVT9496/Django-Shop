@@ -12,8 +12,11 @@ from order.cart import persist_session_vars
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
 from user.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
+
+from xhtml2pdf import pisa
 # Create your views here.
 
 
@@ -161,3 +164,31 @@ def user_order_product_detail(request, id, order_id):
         'orderDetails': orderDetails
     }
     return render(request, "user/user_order_detail.html", context)
+
+
+def export_invoice(request, id):
+    shipping_fee = None
+    category = Category.objects.all()
+    current_user = request.user
+    order = Order.objects.get(user_id = current_user.id, id=id)
+    orderDetails = OrderDetail.objects.filter(order_id=id)
+    # Set template to export
+    template_path = 'user/invoice.html'
+    template = get_template(template_path)
+    
+    context =  {
+        'category': category,
+        'order': order,
+        'orderDetails': orderDetails,
+        'shipping_fee' : shipping_fee,
+        'current_user': current_user
+    }
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+    html = template.render(context)
+    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=request.path)
+    
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>'+ html + '</pre>')
+    
+    return response

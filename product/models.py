@@ -147,4 +147,4 @@ class Voucher(models.Model):
     end_date = models.DateField()
 
     def __str__(self) -> str:
-        return f'code: {self.code}--discount: {self.discount}'
+        return f'{self.discount}'

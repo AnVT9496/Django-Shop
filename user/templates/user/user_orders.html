@@ -40,6 +40,7 @@
                                 <th class="text-left">Status </th>
                                 <th class="text-left">Date </th>
                                 <th class="text-left">Detail </th>
+								<th class="text-left">Export </th>
                             </tr>
                             {% for rs in orders %}
                                 <tr>
@@ -54,7 +55,9 @@
 									</td>
                                     <td class="text-left">{{ rs.status}} </td>
                                     <td class="text-left">{{ rs.create_at}} </td>
-                                    <td class="text-left"><a class="primary-btn" href="/user/order_detail/{{ rs.id }}"> Detail </a></td>
+                                    <td class="text-left"><a class="btn btn-primary" href="/user/order_detail/{{ rs.id }}"> Detail </a></td>
+									<td class="text-left"><a class="btn btn-info" href="/user/export_invoice/{{ rs.id }}"> Export </a></td>
+									<td>
                                 </tr>
                             {% endfor %}
                         </table>
