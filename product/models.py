@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.forms import ModelForm, TextInput, Textarea, widgets
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import Avg, Count
 # Create your models here.
 class Category(MPTTModel):
     STATUS = (
@@ -88,6 +89,24 @@ class Product(models.Model):
     # image_tag.short_description = 'Image'
 
     #  ảnh phụ của product
+
+        # count averate star
+    def average_star(self):
+        stars = Comment.objects.filter(product=self, status=True).aggregate(average=Avg('rate'))
+        avg = 0
+        if stars["average"] is not None:
+            avg = float(stars["average"])
+        return avg
+
+    #count review
+    def count_review(self):
+        reviews = Comment.objects.filter(product=self, status=True).aggregate(count=Count('id'))
+        num = 0
+        if reviews["count"] is not None:
+            num = int(reviews["count"])
+        return num
+
+
 class Images(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = models.CharField(max_length=50, blank=True)
@@ -147,4 +166,4 @@ class Voucher(models.Model):
     end_date = models.DateField()
 
     def __str__(self) -> str:
-        return f'{self.discount}'
+        return f'code {self.code} to discount {self.discount}%'

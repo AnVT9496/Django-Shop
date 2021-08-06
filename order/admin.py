@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
 from django.utils.html import format_html
-
+from product.models import Voucher
 # Register your models here.
 from order.models import *
 
@@ -31,7 +31,7 @@ class OrderAdmin(admin.ModelAdmin):
         )
 
 class OrderDetailAdmin(admin.ModelAdmin):
-    list_display = ['user', 'product','price','quantity','amount']
+    list_display = ['order_id','user', 'product','price','quantity','amount']
     list_filter = ['user']
 
     

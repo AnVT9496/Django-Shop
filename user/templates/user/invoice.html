@@ -12,8 +12,9 @@
                     <div class="panel panel-default height">
                         <div class="panel-heading">Shipping Address</div>
                         <div class="panel-body">
-                            <strong>{{ current_user }}:</strong><br>
-                            {{ order.address }}<br>
+                            {{ order.address }} {{ order.city }} {{ order.country }}<br>
+                            <strong>{{ order.user }}</strong><br>
+                            {{ order.first_name }} {{order.last_name}}<br>
                             <strong>{{ order.phone }}</strong><br>
                         </div>
                     </div>
@@ -63,7 +64,7 @@
                                     <td class="emptyrow text-center"><strong>Promotion</strong></td>
                                     <td class="emptyrow text-right">
 									{% if order.voucher %}
-										{{ order.voucher }}%
+										{{ order.voucher }}
 									{% else %}
 										{{ order.voucher }}
 									{% endif %}

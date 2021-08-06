@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.forms.formsets import DELETION_FIELD_NAME
 import user
 from user.forms import SignUpForm
 from django.http.response import HttpResponseRedirect
@@ -192,3 +193,19 @@ def export_invoice(request, id):
         return HttpResponse('We had some errors <pre>'+ html + '</pre>')
     
     return response
+
+def user_comments(request):
+    category = Category.objects.all()
+    current_user = request.user
+    comments = Comment.objects.filter(user_id=current_user.id)
+    context = {
+        'category':category,
+        'comments':comments,
+    }
+    return render(request, "user/user_comments.html", context)
+
+def user_delete_comment(request, id):
+    current_user = request.user
+    Comment.objects.filter(id=id, user_id=current_user.id).delete()
+    messages.success(request, 'Comment deleted..')
+    return HttpResponseRedirect('/user/comments')

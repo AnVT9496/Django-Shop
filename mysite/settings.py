@@ -155,3 +155,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cart session ID
 CART_SESSION_ID = "mysite"
 VOUCHER_SESSION_ID = 'voucher'
+
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# SESSION_COOKIE_AGE = 30

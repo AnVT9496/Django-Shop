@@ -55,7 +55,7 @@ class SalesReportAdmin(admin.ModelAdmin):
 @admin.register(ProductReport)
 class ProductReportAdmin(admin.ModelAdmin):
     change_list_template = 'admin/product_summary_change_list.html'
-    list_filter = ['user',]
+    list_filter = ['user',('create_at', DateRangeFilter)]
 
     def has_add_permission(self, request, obj=None):
         return False

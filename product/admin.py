@@ -62,6 +62,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 
+
 admin.site.register(Category, CategoryAdmin2)   
 admin.site.register(Product, ProductAdmin) 
 admin.site.register(Images) 
