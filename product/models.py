@@ -43,6 +43,9 @@ class Category(MPTTModel):
             full_path.append(k.title)
             k = k.parent
         return ' / '.join(full_path[::-1])
+    
+    class Meta:
+        verbose_name_plural = "Categories"
 
 class Product(models.Model):
     STATUS = (
@@ -115,6 +118,9 @@ class Images(models.Model):
     def __str__(self):
         return self.title
 
+    #change name in admin
+    class Meta:
+        verbose_name_plural = "Images"
 
 class Comment(models.Model):
     STATUS = (

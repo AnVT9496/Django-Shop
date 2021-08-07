@@ -6,9 +6,9 @@ from product.models import Voucher
 from order.models import *
 
 
-class ShopCartAdmin(admin.ModelAdmin):
-    list_display = ['product', 'user', 'quantity', 'price', 'amount']
-    list_filter = ['user']
+# class ShopCartAdmin(admin.ModelAdmin):
+#     list_display = ['product', 'user', 'quantity', 'price', 'amount']
+#     list_filter = ['user']
 
 class OrderDetailline(admin.TabularInline):
     model = OrderDetail
@@ -37,6 +37,6 @@ class OrderDetailAdmin(admin.ModelAdmin):
     
 
     
-admin.site.register(ShopCart, ShopCartAdmin)
+# admin.site.register(ShopCart, ShopCartAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderDetail, OrderDetailAdmin)

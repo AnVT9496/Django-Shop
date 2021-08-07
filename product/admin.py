@@ -54,6 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
     prepopulated_fields = {'slug': ('title',)}
 
+
 class CommentAdmin(admin.ModelAdmin):
     list_display = [ 'product', 'user' ,'subject','comment', 'rate','status','create_at']
     list_filter = ['status','rate']

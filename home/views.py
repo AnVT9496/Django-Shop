@@ -42,7 +42,7 @@ def index(request):
     #         'frequency' : Count('product__title')
     #     }
     # products_hot = OrderDetail.objects.all().values(
-    #     'product__title', 'product__image','price', 'product__discount_price').annotate(**metrics).order_by('-frequency') #hot products
+    #     'product__title','price', 'product__discount_price').annotate(**metrics).order_by('-frequency') #hot products
 
     promotions = Promotion.objects.filter(
         start_date__lte=datetime.date.today(),
@@ -65,6 +65,7 @@ def index(request):
                 'product_newest':product_newest,
                 'products_lasted':products_lasted,
                 'products_picked':products_picked,
+                # 'products_hot': products_hot,
                 # 'total':total,
                 'promotions': promotions
                 }
