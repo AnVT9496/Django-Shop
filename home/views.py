@@ -4,7 +4,8 @@ from django.http.response import HttpResponse, HttpResponseRedirect, JsonRespons
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
-from  home.models import *
+from django.core.paginator import Paginator
+from home.models import *
 from product.models import Category, Comment, Images, Product, Promotion
 from order.models import ShopCart
 import json
@@ -129,6 +130,12 @@ def category_products(request, id, slug):
         elif gender == 'women':
             products = products.filter(sex='Female')
             gender_checked = 'Women'
+
+    #Paginator
+    number_of_products = 3
+    paginator = Paginator(products, number_of_products)
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
 
     context = {'products':products,
                 'category':category,
