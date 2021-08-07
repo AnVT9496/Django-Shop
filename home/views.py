@@ -7,10 +7,12 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from home.models import *
 from product.models import Category, Comment, Images, Product, Promotion
-from order.models import ShopCart
+from order.models import OrderDetail, ShopCart
 import json
 import datetime
 from decimal import Decimal
+from django.db.models import Count, Sum
+from django.conf import settings
 
 from home.forms import SearchForm
 # Create your views here.
@@ -26,7 +28,6 @@ def check_havediscount(promotions, products):
                 pr_newest.discount_price = round((pr_newest.price * (100 - promotion.discount) / 100) ,2)
                 pr_newest.save()
 
-
 def index(request):
 
     setting = Setting.objects.get(pk = 1)
@@ -35,6 +36,14 @@ def index(request):
     product_newest = Product.objects.all().order_by('-create_at') #sản phẩm mới nhất
     products_lasted = Product.objects.all() #last 4 product
     products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
+
+    # #count số lần product title xuất hiện
+    # metrics = {
+    #         'frequency' : Count('product__title')
+    #     }
+    # products_hot = OrderDetail.objects.all().values(
+    #     'product__title', 'product__image','price', 'product__discount_price').annotate(**metrics).order_by('-frequency') #hot products
+
     promotions = Promotion.objects.filter(
         start_date__lte=datetime.date.today(),
         end_date__gte=datetime.date.today()
@@ -132,7 +141,7 @@ def category_products(request, id, slug):
             gender_checked = 'Women'
 
     #Paginator
-    number_of_products = 3
+    number_of_products = 5
     paginator = Paginator(products, number_of_products)
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
@@ -206,6 +215,13 @@ def product_detail(request, id, slug):
             product.save()
     
     comments = Comment.objects.filter(product_id=id,status='True')
+
+    #Paginator review
+    number_of_comments = 5
+    paginator = Paginator(comments, number_of_comments)
+    page_number = request.GET.get('page')
+    comments = paginator.get_page(page_number)
+
     context = {'product':product,
                 'category':category,
                 'images': images,
