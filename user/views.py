@@ -3,7 +3,7 @@ from django.forms.formsets import DELETION_FIELD_NAME
 import user
 from user.forms import SignUpForm
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from product.models import *
 from user.models import *
@@ -209,3 +209,4 @@ def user_delete_comment(request, id):
     Comment.objects.filter(id=id, user_id=current_user.id).delete()
     messages.success(request, 'Comment deleted..')
     return HttpResponseRedirect('/user/comments')
+

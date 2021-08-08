@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.index, name='index'),
     path('update/', views.user_update, name='user_update'),
@@ -12,4 +12,5 @@ urlpatterns = [
     path('export_invoice/<int:id>', views.export_invoice, name='export_invoice'),
     path('comments/', views.user_comments, name='user_comments'),
     path('deletecomment/<int:id>', views.user_delete_comment, name='user_delete_comment'), 
+
 ]   
