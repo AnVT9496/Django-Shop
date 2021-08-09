@@ -1,5 +1,5 @@
 {% extends 'home/homebase.html' %}
-
+{% load static %}
 {% block title %} Shop Cart {% endblock %}
 {% block description %} {{ setting.description }} {% endblock %}
 {% block keywords %} {{ setting.keywords }} {% endblock %}
@@ -71,12 +71,17 @@
 								{% endfor %} {% endcomment %}
 								{% for item in cart %}
 									{% comment %} {% with product=item.product%} {% endcomment %}
+									
 										<tr class="product-item
-										{% if item.product_quantity_available < item.quantity %}
-										del
+									{% if item.product_quantity_available < item.quantity %}	
+										del 
 										{% endif %}
 										" data-index="{{item.product_id}}">
+											{% if item.product_quantity_available == 0 %}
+											<td class="thumb"><img src="{% static './img/sold-out.png' %}" alt=""></td>
+											{% else %}
 											<td class="thumb"><img src="{{item.product_image}}" alt=""></td>
+											{% endif %}
 											<td class="details">
 												<a href="/product/{{ item.product_id }}/{{ item.product_slug }}">{{item.product}}</a>
 											</td>
@@ -90,7 +95,9 @@
 											<td class="qty text-center"><strong>{{item.quantity}}</strong> </td>
 											<td class="total text-center"><strong class="primary-color">${{item.total_price}}</strong></td>
 											<td class="text-right"><a data-index="{{item.product_id}}" href="#" class="delete-button main-btn icon-btn"><i class="fa fa-close"></i></a></td>
-											<td class="text-center">{{ item.product_quantity_available}}</td>
+											{% if item.product_quantity_available == 0 %}
+											<td class="text-center" style="color: red;">Sold Out</td>
+											{% endif %}
 										</tr>
 									{% comment %} {% endwith %} {% endcomment %}
 								{% endfor %}

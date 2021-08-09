@@ -8,6 +8,16 @@
 
 {% block body %}
 	<!-- BREADCRUMB -->
+    <style>
+    .field-icon {
+        float: right;
+        margin-left: -20px;
+        margin-top: 15px;
+        position: relative;
+        z-index: 2;
+        padding-right:15px;
+    }
+    </style>
 	<div id="breadcrumb">
 		<div class="container">
 			<ul class="breadcrumb">
@@ -25,7 +35,7 @@
 			<!-- row -->
 			<div class="row">
                 <!--safe dùng để format lại font chữ -->
-                <div class="col-md-6">
+                <div class="col-md-6"  style="float:none;margin:auto;">
                     <div class="billing-details">
 
                         <div class="section-title">	
@@ -46,11 +56,11 @@
 								<input class="input" type="text" name="username" placeholder="User Name">
 							</div>
 							<div class="form-group">
-								<input class="input" type="password" name="password" placeholder="Password" id="id_password">
-								<i style="margin-left: -30px; cursor: pointer;" class="far fa-eye" id="togglePassword"></i>
+								<input class="input" type="password" name="password" placeholder="Password" id="password-field">
+								<span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
 							</div>
-                            <input type="submit" value="Login">
-                             <a class="text-uppercase" href="/reset_password">Forgot Password</a>                   
+                            <input class="primary-btn" type="submit" value="Login">
+                             <a style="float:right;" class="text-uppercase" href="/reset_password">Forgot Password</a>                   
                         </form>
                       
                     </div>
@@ -61,7 +71,7 @@
 		<!-- /container -->
 	</div>
 	<!-- /section -->
-<script>
+{% comment %} <script>
   const togglePassword = document.querySelector('#togglePassword');
   const password = document.querySelector('#id_password');
  
@@ -70,8 +80,20 @@
     const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
     password.setAttribute('type', type);
     // toggle the eye slash icon
-    this.classList.toggle('fa-eye-slash');
+    this.classList.toggle('far fa-eye');
+});
+</script> {% endcomment %}
+
+<script>
+$(".toggle-password").click(function() {
+
+  $(this).toggleClass("fa-eye fa-eye-slash");
+  var input = $($(this).attr("toggle"));
+  if (input.attr("type") == "password") {
+    input.attr("type", "text");
+  } else {
+    input.attr("type", "password");
+  }
 });
 </script>
-
 {% endblock %}
