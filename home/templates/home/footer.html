@@ -17,15 +17,18 @@
 						</div>
 						<!-- /footer logo -->
 
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna</p>
+						<p>Legal Name: Đồng Hồ FPT  <br>
+							FPT Uni, Saigon Hi-tech part, District 9, HCMC <br>
+							Phone: +84 79 7779 7779 <br>
+							Email: donghofpt@gmail.com</p>
 
 						<!-- footer social -->
 						<ul class="footer-social">
-							<li><a href="#"><i class="fa fa-facebook"></i></a></li>
-							<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+							<li><a href="https://www.facebook.com/profile.php?id=100066991490141&show_switched_toast=true"><i class="fa fa-facebook"></i></a></li>
+							{% comment %} <li><a href="#"><i class="fa fa-twitter"></i></a></li>
 							<li><a href="#"><i class="fa fa-instagram"></i></a></li>
 							<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-							<li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+							<li><a href="#"><i class="fa fa-pinterest"></i></a></li> {% endcomment %}
 						</ul>
 						<!-- /footer social -->
 					</div>
@@ -35,13 +38,11 @@
 				<!-- footer widget -->
 				<div class="col-md-3 col-sm-6 col-xs-6">
 					<div class="footer">
-						<h3 class="footer-header">My Account</h3>
+						<h3 class="footer-header">Guide</h3>
 						<ul class="list-links">
-							<li><a href="#">My Account</a></li>
-							<li><a href="#">My Wishlist</a></li>
-							<li><a href="#">Compare</a></li>
-							<li><a href="#">Checkout</a></li>
-							<li><a href="#">Login</a></li>
+							<li><a href="{% url 'home:contact' %}">Question & Answers</a></li>
+							<li><a href="{% url 'home:return_policy' %}">Shiping & Return</a></li>
+							<li><a href="{% url 'home:shipping_policy' %}">Shiping Guide</a></li>
 						</ul>
 					</div>
 				</div>
@@ -54,10 +55,10 @@
 					<div class="footer">
 						<h3 class="footer-header">Customer Service</h3>
 						<ul class="list-links">
-							<li><a href="#">About Us</a></li>
-							<li><a href="#">Shiping & Return</a></li>
-							<li><a href="#">Shiping Guide</a></li>
-							<li><a href="#">FAQ</a></li>
+							<li><a href="{% url 'home:aboutus' %}">About Us</a></li>
+							<li><a href="{% url 'home:privacyPolicy' %}">Privacy Policy</a></li>
+							<li><a href="{% url 'home:payment_policy' %}">Payment Policy</a></li>
+							<li><a href="{% url 'home:warranty_policy' %}">Warranty Policy</a></li>
 						</ul>
 					</div>
 				</div>
@@ -66,14 +67,9 @@
 				<!-- footer subscribe -->
 				<div class="col-md-3 col-sm-6 col-xs-6">
 					<div class="footer">
-						<h3 class="footer-header">Stay Connected</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-						<form>
-							<div class="form-group">
-								<input class="input" placeholder="Enter Email Address">
-							</div>
-							<button class="primary-btn">Join Newslatter</button>
-						</form>
+					<h3 class="footer-header">Certification</h3>
+						<img style="width: 160px;" src="{% static 'img/dathongbao.png' %}" alt="shopdongho.com" class="lazyloaded" data-ll-status="loaded">
+						<img style="width: 160px; margin: 10px 0;" src="{% static 'img/noi-khong-voi-hang-gia.png' %}" alt="shopdongho.com" class="lazyloaded" data-ll-status="loaded">
 					</div>
 				</div>
 				<!-- /footer subscribe -->
@@ -86,7 +82,7 @@
 					<!-- footer copyright -->
 					<div class="footer-copyright">
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+						Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved |  <a href="https://www.facebook.com/profile.php?id=100066991490141&show_switched_toast=true" target="_blank">FPT Watch Shop</a>
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 					</div>
 					<!-- /footer copyright -->

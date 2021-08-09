@@ -9,7 +9,7 @@
 {% block body %}
 
 <!-- add modal -->
-<div style="height: 118px; background-color: black;" class=""></div>
+
 <div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -87,7 +87,7 @@ a.del {
 						<div class="product-body">
 							{% if product.have_discount %}
 								<div class="product-label">
-									<span>New</span>
+									{% comment %} <span>New</span> {% endcomment %}
 										{% for pr in promotions  %}
 											{% if pr.product.id == product.id %}										
 												<span class="sale">-{{pr.discount}}%</span>
@@ -125,7 +125,7 @@ a.del {
 							</p>
 							<p><strong>Brand:</strong> {{product.category.title}}</p>
 							<p>{{product.description}}</p>
-							<div class="product-options">
+							{% comment %} <div class="product-options">
 								<ul class="size-option">
 									<li><span class="text-uppercase">Size:</span></li>
 									<li class="active"><a href="#">S</a></li>
@@ -139,7 +139,7 @@ a.del {
 									<li><a href="#" style="background-color:#BF6989;"></a></li>
 									<li><a href="#" style="background-color:#9A54D8;"></a></li>
 								</ul>
-							</div>
+							</div> {% endcomment %}
 
 							<div class="product-btns">
 							{% comment %} <form action="/order/addtoshopcart/{{product.id}}" method="post">
@@ -155,11 +155,11 @@ a.del {
 								<i class="fa fa-shopping-cart"></i> Add to Cart</a>
 							{% comment %} </form>	 {% endcomment %}
 								
-								<div class="pull-right">
+								{% comment %} <div class="pull-right">
 									<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 									<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
 									<button class="main-btn icon-btn"><i class="fa fa-share-alt"></i></button>
-								</div>
+								</div> {% endcomment %}
 							</div>
 						</div>
 					</div>

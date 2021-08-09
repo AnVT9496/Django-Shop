@@ -62,17 +62,16 @@
                             </div>
                             <p><label for="id_first_name">Total: {{ shopcart.get_total_price }} USD </label>
                                 <input type="text" name="total" class="input" readonly value="${{ shopcart.get_total_price }}"></p>
-                            <p><label for="id_first_name">Credit Card Holder</label>
+                            {% comment %} <p><label for="id_first_name">Credit Card Holder</label>
                                 <input type="text" name="holder" class="input"  value=""></p>
                             <p><label for="id_first_name">Credit Card Number</label>
                                 <input type="text" name="number" class="input"  value=""></p>
                             <p><label for="id_first_name">Credit Exp Date/Year</label>
                                 <input type="text" name="ecpdate" class="input"  placeholder="mm/yy"></p>
                             <p><label for="id_first_name">Security Number</label>
-                                <input type="text" name="secnumber" class="input"  value=""></p>
+                                <input type="text" name="secnumber" class="input"  value=""></p> {% endcomment %}
                         </div>
-					</div>
-				</Form>
+					</div> 
 					<div class="col-md-12">
 						<div class="order-summary clearfix">
 							<div class="section-title">

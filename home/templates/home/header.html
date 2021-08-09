@@ -6,7 +6,7 @@
 		<div id="top-header">
 			<div class="container">
 				<div class="pull-left">
-					<span>Welcome to E-shop!</span>
+					<span>Welcome to FPT-Django-Shop!</span>
 						{% if messages %}
 							{% for message in messages %}
 								<div class="alert alert-{{message.tags}}" role="alert">
@@ -15,7 +15,7 @@
 							{% endfor %}
 						{% endif %}
 				</div>
-				<div class="pull-right">
+				{% comment %} <div class="pull-right">
 					<ul class="header-top-links">
 						<li><a href="#">Store</a></li>
 						<li><a href="#">Newsletter</a></li>
@@ -37,7 +37,7 @@
 							</ul>
 						</li>
 					</ul>
-				</div>
+				</div> {% endcomment %}
 			</div>
 		</div>
 		<!-- /top Header -->
@@ -108,7 +108,7 @@
 						{% endif %}	
 							<ul class="custom-menu">
 								<li><a href="/user"><i class="fa fa-user-o"></i> My Account</a></li>
-								<li><a href="/user/favorites"><i class="fa fa-heart-o"></i> My Favorites</a></li>
+								{% comment %} <li><a href="/user/favorites"><i class="fa fa-heart-o"></i> My Favorites</a></li> {% endcomment %}
 								<li><a href="/user/orders"><i class="fa fa-exchange"></i> My Orders</a></li>
 								<li><a href="/user/comments"><i class="fa fa-check"></i> My Comment</a></li>
 								<li><a href="/logout"><i class="fa fa-unlock-alt"></i> Logout</a></li>

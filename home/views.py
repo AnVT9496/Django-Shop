@@ -77,6 +77,38 @@ def aboutUs(request):
     context = {'setting': setting,'category':category}
     return render(request, 'home/about.html', context)
 
+#footer
+def privacyPolicy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_privacy.html', context)
+
+def payment_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_payment.html', context)
+
+def warranty_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_warranty.html', context)
+
+def shipping_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_shipping.html', context)
+
+def return_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_return.html', context)
+#end footer
+
 def contact(request):
     category = Category.objects.all()  #hiển thị thanh navbar
     if request.method == 'POST': # check post
