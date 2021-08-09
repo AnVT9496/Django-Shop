@@ -114,7 +114,7 @@ a.del {
 									<i class="fa fa-star{%if product.average_star < 5%}-o empty{%endif%}"></i>
 									{{product.average_star | stringformat:".2f"}}
 								</div>
-								<a href="#">{{product.count_review}} Review(s) / Add Review</a>
+								<a href="#">{{product.count_review}} Review(s)</a>
 							</div>
 							<p><strong>Availability:</strong>
 							{% if product.amount == 0 %}
@@ -258,7 +258,7 @@ a.del {
 												{% if user.id is not None %}
 												<button class="primary-btn">Submit</button>
 													{% else %}
-													You must be logged in to post a review
+												<p>You must be <strong><a href="/login">logged in</a></strong> to post a review </p>	
 												{% endif %}
 											</form>
 

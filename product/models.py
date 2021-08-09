@@ -123,7 +123,7 @@ class Images(models.Model):
         verbose_name_plural = "Images"
 
 class Comment(models.Model):
-    STATUS = (
+    STATUS = (  
         ('True', 'True'),
         ('False', 'False'),    
     )
