@@ -33,8 +33,8 @@ def index(request):
     setting = Setting.objects.get(pk = 1)
     category = Category.objects.all()
     products_slider = Product.objects.all().order_by('id')[:4] #first 4 product
-    product_newest = Product.objects.all().order_by('-create_at') #sản phẩm mới nhất
-    products_lasted = Product.objects.all() #last 4 product
+    product_newest = Product.objects.all().order_by('-create_at')#sản phẩm mới nhất
+    products_lasted = Product.objects.all().order_by('create_at')[:12]
     products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
 
     # #count số lần product title xuất hiện
@@ -50,6 +50,8 @@ def index(request):
     )
 
     check_havediscount(promotions, products_slider)
+    check_havediscount(promotions, product_newest)
+    # check_havediscount(promotions, products_lasted)
 
     current_user = request.user #access user session information
     # shopcart = ShopCart.objects.filter(user_id = current_user.id)

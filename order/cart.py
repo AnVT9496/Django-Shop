@@ -103,6 +103,7 @@ class Cart(object):
         total = round((subtotal * 0.01*(100 - discount)),2)
 
         self.voucher["voucher"]["total_after_used_voucher"] = total
+
         self.save()
 
         return total

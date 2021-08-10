@@ -17,6 +17,7 @@ from django.template.loader import get_template
 from user.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
 
+from django.core.paginator import Paginator
 from xhtml2pdf import pisa
 # Create your views here.
 
@@ -99,7 +100,7 @@ def user_update(request):
         context = {
             'category': category,
             'user_form': user_form,
-            'profile_form': profile_form
+            'profile_form': profile_form,
         }
         return render(request, 'user/user_update.html', context)
 
@@ -125,7 +126,14 @@ def user_password(request):
 def user_orders(request):
     category = Category.objects.all()
     current_user = request.user
-    orders = Order.objects.filter(user_id = current_user.id)
+    orders = Order.objects.filter(user_id = current_user.id).order_by("-create_at")
+
+    #Paginator order products
+    number_of_order = 10
+    paginator = Paginator(orders, number_of_order)
+    page_number = request.GET.get('page')
+    orders = paginator.get_page(page_number)
+    
     context = {'category': category,
                 'orders': orders}
     return render(request, 'user/user_orders.html', context)
@@ -149,6 +157,13 @@ def user_orderProduct(request):
     category = Category.objects.all()
     current_user = request.user
     order_product = OrderDetail.objects.filter(user_id = current_user.id)
+
+    #Paginator order products
+    number_of_order_product = 10
+    paginator = Paginator(order_product, number_of_order_product)
+    page_number = request.GET.get('page')
+    order_product = paginator.get_page(page_number)
+
     context = {'category': category,
                 'order_product': order_product}
     return render(request, 'user/user_order_product.html', context)

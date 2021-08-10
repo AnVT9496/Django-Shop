@@ -15,6 +15,7 @@ class OrderDetailline(admin.TabularInline):
     readonly_fields = ('user', 'product','price','quantity','amount')
     can_delete = False
     extra = 0
+    exclude = ['status']
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -29,6 +30,7 @@ class OrderAdmin(admin.ModelAdmin):
             '<a class="btn btn-info" href="/user/export_invoice/{}"> Export </a>', 
           obj.id
         )
+
 
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ['order_id','user', 'product','price','quantity','amount']

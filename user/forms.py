@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.forms import TextInput, EmailInput, Select, FileInput
 from django.forms import widgets
 from user.models import UserProfile
-
+from order.constants import *
 class SignUpForm(UserCreationForm):
     username = forms.CharField(max_length=30,label= 'User Name :')
     email = forms.EmailField(max_length=200,label= 'Email :')

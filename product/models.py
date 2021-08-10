@@ -150,7 +150,7 @@ class Promotion(models.Model):
     discount = models.IntegerField(
         validators=[
             MaxValueValidator(100),
-            MinValueValidator(10)
+            MinValueValidator(1)
         ])
     start_date = models.DateField()
     end_date = models.DateField()

@@ -40,7 +40,6 @@
                                 <th class="text-left">Price </th>   
                                 <th class="text-left">Quantity </th>
                                 <th class="text-left">Amount </th>
-                                <th class="text-left">Status </th>
                                 <th class="text-left">Date </th>
                                 <th class="text-left">Detail </th>
                             </tr>
@@ -55,13 +54,34 @@
                                     <td class="text-left">{{ rs.price}} </td>
                                     <td class="text-left">{{ rs.quantity}} </td>
                                     <td class="text-left">{{ rs.amount}} </td>
-                                    <td class="text-left">{{ rs.status}} </td>
                                     <td class="text-left">{{ rs.create_at}} </td>
                                     <td class="text-left"><a class="primary-btn" href="/user/order_product_detail/{{ rs.id }}/{{rs.order_id}}"> Detail </a></td>
                                 </tr>
                             {% endfor %}
-
+						
                         </table>
+
+						{% if order_product.has_other_pages %}
+							<ul class="pagination">
+								{% if order_product.has_previous %}
+									<li><a href="?page={{ order_product.previous_page_number }}">&laquo;</a></li>
+								{% else %}
+									<li class="disabled"><span>&laquo;</span></li>
+								{% endif %}
+								{% for i in order_product.paginator.page_range %}
+									{% if order_product.number == i %}
+										<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+									{% else %}
+										<li><a href="?page={{ i }}">{{ i }}</a></li>
+									{% endif %}
+								{% endfor %}
+								{% if order_product.has_next %}
+									<li><a href="?page={{ order_product.next_page_number }}">&raquo;</a></li>
+								{% else %}
+									<li class="disabled"><span>&raquo;</span></li>
+								{% endif %}
+							</ul>
+							{% endif %}
 						</div>
 
 					</div>

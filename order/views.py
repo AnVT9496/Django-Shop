@@ -238,17 +238,17 @@ def orderdetail(request):
         else:
             messages.warning(request, form.errors)
             return HttpResponseRedirect("/order/orderdetail")
-
+    # voucher = Voucher.objects.get(code = code)
     form= OrderForm()
     profile = UserProfile.objects.get(user_id=current_user.id)
-
     context = {'shopcart': cart,
                'category': category,
             #    'total': total,
                'form': form,
                'profile': profile,
                'discount': discount,
-               'cart_totalprice': cart_totalprice
+               'cart_totalprice': cart_totalprice,
+            #    'voucher':voucher,
                }
     return render(request, 'order/order_form.html', context)
 

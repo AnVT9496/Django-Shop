@@ -57,7 +57,16 @@
                             </tr>
                             <tr>
                                 <th class="text-left">Status</th>
-                                <td class="text-left">{{ order.status}}</td>
+                                    {% if order.status == 'New' or order.status == 'Preparing'%}
+                                    <td class="text-left"><span style="background-color:#3498db; color:white; padding:5px">{{ order.status}}</span> </td>
+									{% elif order.status == 'Accepted' or order.status == 'Completed'  %}
+									<td class="text-left"><span style="background-color:#27ae60; color:white;padding:5px">{{ order.status}}</span> </td>
+                                    {% elif order.status == 'OnShipping'%}
+									<td class="text-left"><span style="background-color:#f1c40f; color:white;padding:5px">{{ order.status}}</span> </td>
+                                    {% else %}
+									<td class="text-left"><span style="background-color:#e74c3c; color:white;padding:5px">{{ order.status}}</span> </td>
+									{% endif %} 
+                                {% comment %} <td class="text-left">{{ order.status}}</td> {% endcomment %}
                             </tr>
 
                             <tr>
@@ -83,7 +92,6 @@
                                 <th class="text-center">Price </th>
                                 <th class="text-center">Quantity </th>
                                 <th class="text-center">Amount </th>
-                                <th class="text-center">Status </th>
                                 <th class="text-center">Date </th>
                             </tr>
                             </thead>
@@ -99,7 +107,6 @@
                                         <td class="text-left">{{ rs.price}} </td>
                                         <td class="text-left">{{ rs.quantity}} </td>
                                         <td class="text-left">{{ rs.amount}} </td>
-                                        <td class="text-left">{{ rs.status}} </td>
                                         <td class="text-left">{{ rs.create_at}} </td>
                                     </tr>
                                 {% endfor %}

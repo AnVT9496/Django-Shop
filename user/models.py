@@ -1,8 +1,11 @@
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.forms.models import ModelForm
 
 from django.utils.safestring import mark_safe
+
+
 # Create your models here.
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -21,3 +24,6 @@ class UserProfile(models.Model):
     def image_tag(self):
         return mark_safe('<img src="{}" height="50"/>'.format(self.image.url))
     image_tag.short_description = 'Image'
+
+
+
