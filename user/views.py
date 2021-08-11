@@ -93,6 +93,9 @@ def user_update(request):
             profile_form.save()
             messages.success(request, 'Your account has been updated!')
             return HttpResponseRedirect('/user')
+        else:
+            messages.warning(request, profile_form.errors )
+            return HttpResponseRedirect('/user/update')
     else:
         category = Category.objects.all()
         user_form = UserUpdateForm(instance=request.user)

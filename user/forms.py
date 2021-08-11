@@ -6,6 +6,8 @@ from django.forms import TextInput, EmailInput, Select, FileInput
 from django.forms import widgets
 from user.models import UserProfile
 from order.constants import *
+
+
 class SignUpForm(UserCreationForm):
     username = forms.CharField(max_length=30,label= 'User Name :')
     email = forms.EmailField(max_length=200,label= 'Email :')
@@ -42,11 +44,13 @@ CITY = [
     ('Can Tho', 'Can Tho'),
 ]
 class ProfileUpdateForm(forms.ModelForm):
+    phone = forms.CharField(validators=[PHONE_NUMBER_REGEX],widget=TextInput(attrs={'class': 'input','placeholder':'phone'}))
+
     class Meta:
         model = UserProfile
         fields = ('phone', 'address', 'city','country','image')
         widgets = {
-            'phone'     : TextInput(attrs={'class': 'input','placeholder':'phone'}),
+            # 'phone'     : TextInput(attrs={'class': 'input','placeholder':'phone'}),
             'address'   : TextInput(attrs={'class': 'input','placeholder':'address'}),
             'city'      : Select(attrs={'class': 'input','placeholder':'city'},choices=CITY),
             'country'   : TextInput(attrs={'class': 'input','placeholder':'country' }),
