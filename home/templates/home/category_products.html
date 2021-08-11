@@ -245,6 +245,7 @@
 
 					<!-- STORE -->
 					<div id="store">
+					{% if products %}
 						<!-- row -->
 						<div class="row">
 						<div class="col-md-12">
@@ -298,6 +299,9 @@
 					</div>
 
 						</div>
+					{% else %}
+						<h3>Comming soon</h3>
+					{% endif %}
 					</div>
 					<!-- /STORE -->
 
