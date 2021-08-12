@@ -73,19 +73,21 @@
 						<form action="/search/" method="POST">
 						{% csrf_token %}
 							<input id="query" name="query" class="input search-input" type="text" placeholder="Enter your keyword">
-							<select name="catid" class="input search-categories">
-								<option value="0">All Categories</option>	
-								{% load mptt_tags %}
-								{% recursetree category %}
-									{% if node.is_leaf_node %}
-										<option value="{{node.id}}">{{node.title}}</option>
+						 	<select name="catid" class="input search-categories" 
+							 style="background-color: #ecf0f1;-webkit-appearance: none;"
+							 onmousedown="(function(e){ e.preventDefault(); })(event, this)"> 
+								<option value="0" hidden>Search Product</option>
+								{% comment %} {% load mptt_tags %} {% endcomment %}
+								{% comment %} {% recursetree category %}
+									{% if nsode.is_leaf_node %}
+										 <option value="{{node.id}}">{{node.title}}</option>
 									{% endif %}	
 									{% if not node.is_leaf_node %}
 										<optgroup label="{{node.title}}">
-											{{children}}
+											{{children}} 
 										</optgroup>
 									{% endif %}
-								{% endrecursetree %}
+								{% endrecursetree %}  {% endcomment %}
 							</select>
 							<button class="search-btn"><i class="fa fa-search"></i></button>
 						</form>
