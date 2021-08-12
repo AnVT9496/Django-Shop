@@ -28,14 +28,14 @@
                 <div class="col-md-3">
 					{% include "user/user_panel.html" %}
                 </div>
-                {% if messages %}
+				<div class="col-md-9">
+                            {% if messages %}
 								{% for message in messages %}
 									<div class="alert alert-{{message.tags}}" role="alert">
 										{{ message | safe}}
 									</div>
 								{% endfor %}
 							{% endif %}
-				<div class="col-md-9">
                     <div class="billing-details">
                         <div class="section-title">	
                             <h3 class="title">User Profile Information</h3>

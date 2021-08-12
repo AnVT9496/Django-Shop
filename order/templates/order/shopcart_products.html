@@ -128,8 +128,8 @@
 							<form id="voucher-form" action="" method="POST" >
 							{% csrf_token %}
 							<div class="pull-right" style="border-right: 5px solid white;">
-								<input id='inputcoupon' type="text" name="code" placeholder="Promo code" required>
-								<a id= 'addcoupon' class="primary-btn">Add Promotion</a>
+								<input id='inputcoupon' type="text" name="code" placeholder="Voucher code" required>
+								<a id= 'addcoupon' class="primary-btn">Add Voucher</a>
 								<a id= 'removecoupon' href="{% url 'removecoupon' %}" class="primary-btn">Clear</a>
 							</div>
 							</form>

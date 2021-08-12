@@ -32,10 +32,10 @@ def index(request):
 
     setting = Setting.objects.get(pk = 1)
     category = Category.objects.all()
-    products_slider = Product.objects.all().order_by('id')[:4] #first 4 product
-    product_newest = Product.objects.all().order_by('-create_at')#sản phẩm mới nhất
+    products_slider = Product.objects.all().order_by('id')[:6] #first 4 product
+    product_newest = Product.objects.all().order_by('-id')[:24]#sản phẩm mới nhất
     products_lasted = Product.objects.all().order_by('create_at')[:12]
-    products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
+    products_picked = Product.objects.all().order_by('?')[:8] #random 4 product
 
     # #count số lần product title xuất hiện
     # metrics = {
