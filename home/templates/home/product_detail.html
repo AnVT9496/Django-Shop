@@ -8,6 +8,38 @@
 
 {% block body %}
 
+<!-- add modal -->
+
+<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Notification</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Add to cart success
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+a.disabled {
+    pointer-events: none;
+    color: white;
+	background-color: #ccc;
+}
+a.del {
+  text-decoration: line-through;
+}
+</style>
+
 	<!-- BREADCRUMB -->
 	<div id="breadcrumb">
 		<div class="container">
@@ -53,26 +85,47 @@
 					</div>
 					<div class="col-md-6">
 						<div class="product-body">
-							<div class="product-label">
-								<span>New</span>
-								<span class="sale">-20%</span>
-							</div>
+							{% if product.have_discount %}
+								<div class="product-label">
+									{% comment %} <span>New</span> {% endcomment %}
+										{% for pr in promotions  %}
+											{% if pr.product.id == product.id %}										
+												<span class="sale">-{{pr.discount}}%</span>
+											{% endif %}
+										{% endfor %}
+								</div>
+							{% endif %}
 							<h2 class="product-name">{{product.title}}</h2>
-							<h3 class="product-price">{{product.price}} <del class="product-old-price">$45.00</del></h3>
+							{% if product.have_discount %}
+								{% for pr in promotions  %}
+									{% if pr.product.id == product.id %}
+										<h3 class="product-price">${{product.discount_price}} <del class="product-old-price">${{product.price}}</del></h3>
+									{% endif %}
+								{% endfor %}
+							{% else %}
+								<h3 class="product-price">${{product.price}}</h3>
+							{% endif %}	
 							<div>
 								<div class="product-rating">
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star-o empty"></i>
+									<i class="fa fa-star{%if product.average_star < 1%}-o empty{%endif%}"></i>
+									<i class="fa fa-star{%if product.average_star < 2%}-o empty{%endif%}"></i>
+									<i class="fa fa-star{%if product.average_star < 3%}-o empty{%endif%}"></i>
+									<i class="fa fa-star{%if product.average_star < 4%}-o empty{%endif%}"></i>
+									<i class="fa fa-star{%if product.average_star < 5%}-o empty{%endif%}"></i>
+									{{product.average_star | stringformat:".2f"}}
 								</div>
-								<a href="#">3 Review(s) / Add Review</a>
+								<a href="#">{{product.count_review}} Review(s)</a>
 							</div>
-							<p><strong>Availability:</strong> In Stock</p>
+							<p><strong>Availability:</strong>
+							{% if product.amount == 0 %}
+								Out stock
+							{% else %}
+								{{product.amount}}
+							{% endif %}
+							</p>
 							<p><strong>Brand:</strong> {{product.category.title}}</p>
 							<p>{{product.description}}</p>
-							<div class="product-options">
+							{% comment %} <div class="product-options">
 								<ul class="size-option">
 									<li><span class="text-uppercase">Size:</span></li>
 									<li class="active"><a href="#">S</a></li>
@@ -86,23 +139,27 @@
 									<li><a href="#" style="background-color:#BF6989;"></a></li>
 									<li><a href="#" style="background-color:#9A54D8;"></a></li>
 								</ul>
-							</div>
+							</div> {% endcomment %}
 
 							<div class="product-btns">
-							<form action="/order/addtoshopcart/{{product.id}}" method="post">
-							{% csrf_token %}
+							{% comment %} <form action="/order/addtoshopcart/{{product.id}}" method="post">
+							{% csrf_token %} {% endcomment %}
 								<div class="qty-input">
 									<span class="text-uppercase">QTY: </span>
-									<input class="input" name="quantity" type="number" value="1" min="1" max="{{product.amount}}">
+									<input id="quantity_input" class="input" name="quantity" type="number" min="1" max="{{product.amount}}" placeholder="Qty">
 								</div>
-								<button type= "submit" class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
-							</form>	
+								<a href="#" id="add-cart-button" value="{{product.id}}" class="primary-btn add-to-cart 
+								{% if product.amount == 0 %}
+									disabled del
+								{% endif %}">
+								<i class="fa fa-shopping-cart"></i> Add to Cart</a>
+							{% comment %} </form>	 {% endcomment %}
 								
-								<div class="pull-right">
+								{% comment %} <div class="pull-right">
 									<button class="main-btn icon-btn"><i class="fa fa-heart"></i></button>
 									<button class="main-btn icon-btn"><i class="fa fa-exchange"></i></button>
 									<button class="main-btn icon-btn"><i class="fa fa-share-alt"></i></button>
-								</div>
+								</div> {% endcomment %}
 							</div>
 						</div>
 					</div>
@@ -110,7 +167,7 @@
 						<div class="product-tab">
 							<ul class="tab-nav">
 								<li class="active"><a data-toggle="tab" href="#tab1">Detail</a></li>
-								<li><a data-toggle="tab" href="#tab2">Reviews (3)</a></li>
+								<li><a data-toggle="tab" href="#tab2">Reviews ({{product.count_review}})</a></li>
 							</ul>
 							<div class="tab-content">
 								<div id="tab1" class="tab-pane fade in active">
@@ -143,12 +200,27 @@
 												</div>
 												{% endfor %}
 
-												<ul class="reviews-pages">
-													<li class="active">1</li>
-													<li><a href="#">2</a></li>
-													<li><a href="#">3</a></li>
-													<li><a href="#"><i class="fa fa-caret-right"></i></a></li>
-												</ul>
+						{% if comments.has_other_pages %}
+							<ul class="pagination">
+								{% if comments.has_previous %}
+									<li><a href="?page={{ comments.previous_page_number }}">&laquo;</a></li>
+								{% else %}
+									<li class="disabled"><span>&laquo;</span></li>
+								{% endif %}
+								{% for i in comments.paginator.page_range %}
+									{% if comments.number == i %}
+										<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+									{% else %}
+										<li><a href="?page={{ i }}">{{ i }}</a></li>
+									{% endif %}
+								{% endfor %}
+								{% if comments.has_next %}
+									<li><a href="?page={{ comments.next_page_number }}">&raquo;</a></li>
+								{% else %}
+									<li class="disabled"><span>&raquo;</span></li>
+								{% endif %}
+							</ul>
+							{% endif %}
 											</div>
 										</div>
 
@@ -186,7 +258,7 @@
 												{% if user.id is not None %}
 												<button class="primary-btn">Submit</button>
 													{% else %}
-													You must be logged in to post a review
+												<p>You must be <strong><a href="/login">logged in</a></strong> to post a review </p>	
 												{% endif %}
 											</form>
 
@@ -205,6 +277,37 @@
 		<!-- /container -->
 	</div>
 	<!-- /section -->
+
+	<script>
+    $(document).on('click','#add-cart-button', function(e){
+      e.preventDefault();
+      const id =$('#add-cart-button').attr('value');
+      const qty =parseInt($('#quantity_input').val());
+      /*const store= parseInt($('#quantity_selected').attr('data-store'))
+      if (qty > store)
+        return; */
+      $.ajax({
+        type:'POST',
+        url: '{% url "addtoshopcart" product.id %}',
+        data: {
+          id: id,
+          qty:qty,
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          action: 'post'
+        },
+        success: function(json){
+          console.log(json)
+          document.getElementById("cart-count").innerHTML = json.quantity;
+		  document.getElementById("cart-price").innerHTML = json.subtotal + '$';
+          $("#AddModal").modal();
+
+        },
+        error: function(xhr,errmsg,err){
+          console.log(xhr);
+        }
+      });
+    })
+	</script>
 
 
 {% endblock %}

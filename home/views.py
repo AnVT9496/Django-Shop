@@ -1,30 +1,63 @@
 from order.views import shopcart
 from home.models import Setting
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
-from  home.models import *
-from product.models import Category, Comment, Images, Product
-from order.models import ShopCart
+from django.core.paginator import Paginator
+from home.models import *
+from product.models import Category, Comment, Images, Product, Promotion
+from order.models import OrderDetail, ShopCart
 import json
+import datetime
+from decimal import Decimal
+from django.db.models import Count, Sum
+from django.conf import settings
 
 from home.forms import SearchForm
 # Create your views here.
+
+def check_havediscount(promotions, products):
+    for pr_newest in products:
+        pr_newest.have_discount = False
+        pr_newest.discount_price = None
+        pr_newest.save()
+        for promotion in promotions:
+            if promotion.product.id == pr_newest.id:
+                pr_newest.have_discount = True
+                pr_newest.discount_price = round((pr_newest.price * (100 - promotion.discount) / 100) ,2)
+                pr_newest.save()
+
 def index(request):
 
     setting = Setting.objects.get(pk = 1)
     category = Category.objects.all()
-    products_slider = Product.objects.all().order_by('id')[:4] #first 4 product
-    product_newest = Product.objects.all().order_by('-create_at') #sản phẩm mới nhất
-    products_lasted = Product.objects.all() #last 4 product
-    products_picked = Product.objects.all().order_by('?')[:4] #random 4 product
+    products_slider = Product.objects.all().order_by('id')[:6] #first 4 product
+    product_newest = Product.objects.all().order_by('-id')[:24]#sản phẩm mới nhất
+    products_lasted = Product.objects.all().order_by('create_at')[:12]
+    products_picked = Product.objects.all().order_by('?')[:8] #random 4 product
+
+    # #count số lần product title xuất hiện
+    # metrics = {
+    #         'frequency' : Count('product__title')
+    #     }
+    # products_hot = OrderDetail.objects.all().values(
+    #     'product__title','price', 'product__discount_price').annotate(**metrics).order_by('-frequency') #hot products
+
+    promotions = Promotion.objects.filter(
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today()
+    )
+
+    check_havediscount(promotions, products_slider)
+    check_havediscount(promotions, product_newest)
+    # check_havediscount(promotions, products_lasted)
 
     current_user = request.user #access user session information
-    shopcart = ShopCart.objects.filter(user_id = current_user.id)
-    total = 0
-    for rs in shopcart:
-        total += rs.product.price * rs.quantity
+    # shopcart = ShopCart.objects.filter(user_id = current_user.id)
+    # total = 0
+    # for rs in shopcart:
+    #     total += rs.product.price * rs.quantity
 
     page = "home"
     context = {'setting': setting, 
@@ -34,7 +67,10 @@ def index(request):
                 'product_newest':product_newest,
                 'products_lasted':products_lasted,
                 'products_picked':products_picked,
-                'total':total}
+                # 'products_hot': products_hot,
+                # 'total':total,
+                'promotions': promotions
+                }
     return render(request, 'home/index.html', context)
 
 def aboutUs(request):
@@ -42,6 +78,38 @@ def aboutUs(request):
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/about.html', context)
+
+#footer
+def privacyPolicy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_privacy.html', context)
+
+def payment_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_payment.html', context)
+
+def warranty_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_warranty.html', context)
+
+def shipping_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_shipping.html', context)
+
+def return_policy(request):
+    category = Category.objects.all()   #hiển thị thanh navbar
+    setting = Setting.objects.get(pk=1)
+    context = {'setting': setting,'category':category}
+    return render(request, 'home/policy_return.html', context)
+#end footer
 
 def contact(request):
     category = Category.objects.all()  #hiển thị thanh navbar
@@ -65,13 +133,64 @@ def contact(request):
 
 
 def category_products(request, id, slug):
-    shopcart = ShopCart.objects.all()
+    # shopcart = ShopCart.objects.all()
+    range_of_price = {
+        "Under $10": 1,
+        "From $10-$20": 2,
+        "Above $20": 3,
+        "All": 4
+    }
+
+    allgender = {
+        "Men": 'men',
+        "Women": 'women',
+        "All": 'all'
+    }
+
+    price = request.POST.get("price", None)
+    gender = request.POST.get("gender", None)
 
     category = Category.objects.all()
     products = Product.objects.filter(category_id=id)
+    price_checked = 'All'
+    gender_checked = 'All'
+
+    #Filter product by price
+    if price:
+        if price == '1':
+            products = products.filter(price__lte=10)
+            price_checked = 'Under $10'
+        elif price == '2':
+            products = products.filter(price__gt=10).filter(price__lt=20)
+            price_checked = 'From $10-$20'
+        elif price == '3':
+            products = products.filter(price__gte=20)
+            price_checked = 'Above $20'
+    
+    if gender:
+        if gender == 'men':
+            products = products.filter(sex='Male')
+            gender_checked = 'Men'
+        elif gender == 'women':
+            products = products.filter(sex='Female')
+            gender_checked = 'Women'
+
+    #Paginator
+    number_of_products = 5
+    paginator = Paginator(products, number_of_products)
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
     context = {'products':products,
                 'category':category,
-                'shopcart':shopcart
+                'range_of_price': range_of_price,
+                'price_checked': price_checked,
+                'allgender': allgender,
+                'gender_checked': gender_checked,
+                'id_category': id,
+                'slug': slug,
+                
+                # 'shopcart':shopcart
                 }
     return render(request, 'home/category_products.html', context)
 
@@ -116,11 +235,32 @@ def product_detail(request, id, slug):
     category = Category.objects.all()
     product = Product.objects.get(pk=id)
     images = Images.objects.filter(product_id=id)
+    promotions = Promotion.objects.filter(
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today()
+    )
+
+    product.have_discount = False
+    product.discount_price = None
+    product.save()
+    for promotion in promotions:
+        if promotion.product.id == product.id:
+            product.have_discount = True
+            product.discount_price = round((product.price * (100 - promotion.discount) / 100), 2)
+            product.save()
     
     comments = Comment.objects.filter(product_id=id,status='True')
+
+    #Paginator review
+    number_of_comments = 5
+    paginator = Paginator(comments, number_of_comments)
+    page_number = request.GET.get('page')
+    comments = paginator.get_page(page_number)
+
     context = {'product':product,
                 'category':category,
                 'images': images,
                 'comments':comments,
+                'promotions': promotions
                 }
     return render(request, 'home/product_detail.html', context)

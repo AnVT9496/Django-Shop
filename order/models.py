@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import *
+from .constants import *
 
 
 from product.models import *
@@ -31,7 +32,7 @@ class Order(models.Model):
     STATUS = (
         ('New', 'New'),
         ('Accepted', 'Accepted'),
-        ('Preaparing', 'Preaparing'),
+        ('Preparing', 'Preparing'),
         ('OnShipping', 'OnShipping'),
         ('Completed', 'Completed'),
         ('Canceled', 'Canceled'),
@@ -51,11 +52,17 @@ class Order(models.Model):
     adminnote = models.CharField(blank=True, max_length=100)
     create_at=models.DateTimeField(auto_now_add=True)
     update_at=models.DateTimeField(auto_now=True)
+    voucher = models.ForeignKey(Voucher, on_delete=models.SET_NULL, null=True, blank=True)
+    total_after_used_voucher = models.FloatField(null=True, blank=True)
+    
 
     def __str__(self):
-        return self.user.first_name
+        return f"{self.id}-{self.user.first_name}"
 
 class OrderForm(ModelForm):
+    phone = CharField(validators=[PHONE_NUMBER_REGEX],widget=TextInput(attrs={'class':'form-control', 'autocomplete':'off'}), required=True)
+    address = CharField(required=True)
+
     class Meta:
         model = Order   
         fields = ['first_name','last_name','address','phone','city','country']

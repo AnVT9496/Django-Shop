@@ -24,6 +24,13 @@
 		<div class="container">
 			<!-- row -->
 			<div class="row">
+							{% if messages %}
+								{% for message in messages %}
+									<div class="alert alert-{{message.tags}}" role="alert">
+										{{ message | safe}}
+									</div>
+								{% endfor %}
+							{% endif %} 
 				<Form action="" method="POST">
 					 {% csrf_token %}
 					<div class="col-md-6">
@@ -60,19 +67,23 @@
                             <div class="section-title">
                                 <h4 class="title">Payment Information</h4>
                             </div>
-                            <p><label for="id_first_name">Total: {{ total }} USD </label>
-                                <input type="text" name="total" class="input" readonly value="${{ total }}"></p>
-                            <p><label for="id_first_name">Credit Card Holder</label>
+							{% if discount %}
+                            <p><label for="id_first_name">Total: {{ cart_totalprice }} USD </label>
+                                <input type="text" name="total" class="input" readonly value="${{ cart_totalprice }}"></p>
+							{% else %}
+							<p><label for="id_first_name">Total: {{ shopcart.get_total_price }} USD </label>
+                                <input type="text" name="total" class="input" readonly value="${{ shopcart.get_total_price }}"></p>
+							{% endif %}
+                            {% comment %} <p><label for="id_first_name">Credit Card Holder</label>
                                 <input type="text" name="holder" class="input"  value=""></p>
                             <p><label for="id_first_name">Credit Card Number</label>
                                 <input type="text" name="number" class="input"  value=""></p>
                             <p><label for="id_first_name">Credit Exp Date/Year</label>
                                 <input type="text" name="ecpdate" class="input"  placeholder="mm/yy"></p>
                             <p><label for="id_first_name">Security Number</label>
-                                <input type="text" name="secnumber" class="input"  value=""></p>
+                                <input type="text" name="secnumber" class="input"  value=""></p> {% endcomment %}
                         </div>
-					</div>
-				</Form>
+					</div> 
 					<div class="col-md-12">
 						<div class="order-summary clearfix">
 							<div class="section-title">
@@ -92,18 +103,23 @@
 								<tbody>
 								{% for rs in shopcart %}
 									<tr>
-										<td class="thumb"><img src="{{rs.product.image.url}}" alt=""></td>
+										<td class="thumb"><img src="{{rs.product_image}}" alt=""></td>
 										<td class="details">
-											<a href="/product/{{ rs.product.id }}/{{ rs.product.slug }}">{{rs.product}}</a>
+											<a href="/product/{{ rs.product_id }}/{{ rs.product_slug }}">{{rs.product}}</a>
 											{% comment %} <ul>
 												<li><span>Size: XL</span></li>
 												<li><span>Color: Camelot</span></li>
 											</ul> {% endcomment %}
 										</td>
-										<td class="price text-center"><strong>${{rs.product.price}}</strong>
+										<td class="price text-center"><strong>$
+											{% if rs.product_havediscount %}
+												{{rs.product_discount_price}}
+											{% else %}
+												{{rs.product_price}}
+											{% endif %}</strong>
 										{% comment %} <br><del class="font-weak"><small>$40.00</small></del></td> {% endcomment %}
 										<td class="qty text-center"><strong>{{rs.quantity}}</strong> </td>
-										<td class="total text-center"><strong class="primary-color">${{rs.amount}}</strong></td>
+										<td class="total text-center"><strong class="primary-color">${{rs.total_price}}</strong></td>
 									</tr>
 								{% endfor %}
 								</tbody>
@@ -111,7 +127,18 @@
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>SUBTOTAL</th>
-										<th colspan="2" class="sub-total">${{total}}</th>
+										<th colspan="2" class="sub-total">${{shopcart.get_subtotal_price}}</th>
+									</tr>
+									<tr>
+										<th class="empty" colspan="3"></th>
+										<th>VOUCHER</th>
+										<td colspan="2" id="promotion-code">
+										{% if discount %}
+											-{{discount}}%
+										{% else %}
+											None
+										{% endif %}
+										</td>
 									</tr>
 									<tr>
 										<th class="empty" colspan="3"></th>
@@ -121,7 +148,12 @@
 									<tr>
 										<th class="empty" colspan="3"></th>
 										<th>TOTAL</th>
-										<th colspan="2" class="total">${{total}}</th>
+										<th colspan="2" class="total">$
+										{% if discount %}
+											{{cart_totalprice}}
+										{% else %}
+											{{shopcart.get_total_price}}
+										{% endif %}</th>
 									</tr>
 								</tfoot>
 							</table>

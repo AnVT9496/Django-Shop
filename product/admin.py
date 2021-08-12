@@ -7,12 +7,15 @@ from mptt.admin import DraggableMPTTAdmin
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['title','parent', 'status']
     list_filter = ['status']
+
+
 class CategoryAdmin2(DraggableMPTTAdmin):
     mptt_indent_field = "title"
     list_display = ('tree_actions', 'indented_title',
                     'related_products_count', 'related_products_cumulative_count')
     list_display_links = ('indented_title',)
     prepopulated_fields = {'slug': ('title',)}
+
     # inlines = [CategoryLangInline]
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -48,11 +51,13 @@ class ProductImageInline(admin.TabularInline):
     extra = 3
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['title','category', 'status','image_tag']
-    list_filter = ['category']
+    list_display = ['title','category', 'price','image_tag', 'amount']
+    list_filter = ['category','sex']
     readonly_fields = ('image_tag',)
     inlines = [ProductImageInline]
     prepopulated_fields = {'slug': ('title',)}
+    exclude = ['have_discount', 'discount_price']
+
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = [ 'product', 'user' ,'subject','comment', 'rate','status','create_at']
@@ -62,7 +67,10 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 
+
 admin.site.register(Category, CategoryAdmin2)   
 admin.site.register(Product, ProductAdmin) 
 admin.site.register(Images) 
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Promotion)
+admin.site.register(Voucher)

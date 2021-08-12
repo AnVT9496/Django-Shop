@@ -1,17 +1,24 @@
+from django.conf import settings
+from django.forms.formsets import DELETION_FIELD_NAME
 import user
 from user.forms import SignUpForm
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from product.models import *
 from user.models import *
 from order.models import *
+from order.cart import persist_session_vars
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
 from user.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
+
+from django.core.paginator import Paginator
+from xhtml2pdf import pisa
 # Create your views here.
 
 
@@ -71,6 +78,8 @@ def signup_form(request):
                 'form': form}
     return render(request, 'user/signup_form.html', context)
 
+
+@persist_session_vars([settings.CART_SESSION_ID, settings.VOUCHER_SESSION_ID])
 def logout_func(request):
     logout(request)
     return HttpResponseRedirect('/')
@@ -84,6 +93,9 @@ def user_update(request):
             profile_form.save()
             messages.success(request, 'Your account has been updated!')
             return HttpResponseRedirect('/user')
+        else:
+            messages.warning(request, profile_form.errors )
+            return HttpResponseRedirect('/user/update')
     else:
         category = Category.objects.all()
         user_form = UserUpdateForm(instance=request.user)
@@ -91,7 +103,7 @@ def user_update(request):
         context = {
             'category': category,
             'user_form': user_form,
-            'profile_form': profile_form
+            'profile_form': profile_form,
         }
         return render(request, 'user/user_update.html', context)
 
@@ -117,7 +129,14 @@ def user_password(request):
 def user_orders(request):
     category = Category.objects.all()
     current_user = request.user
-    orders = Order.objects.filter(user_id = current_user.id)
+    orders = Order.objects.filter(user_id = current_user.id).order_by("-create_at")
+
+    #Paginator order products
+    number_of_order = 10
+    paginator = Paginator(orders, number_of_order)
+    page_number = request.GET.get('page')
+    orders = paginator.get_page(page_number)
+    
     context = {'category': category,
                 'orders': orders}
     return render(request, 'user/user_orders.html', context)
@@ -141,6 +160,13 @@ def user_orderProduct(request):
     category = Category.objects.all()
     current_user = request.user
     order_product = OrderDetail.objects.filter(user_id = current_user.id)
+
+    #Paginator order products
+    number_of_order_product = 10
+    paginator = Paginator(order_product, number_of_order_product)
+    page_number = request.GET.get('page')
+    order_product = paginator.get_page(page_number)
+
     context = {'category': category,
                 'order_product': order_product}
     return render(request, 'user/user_order_product.html', context)
@@ -157,3 +183,48 @@ def user_order_product_detail(request, id, order_id):
         'orderDetails': orderDetails
     }
     return render(request, "user/user_order_detail.html", context)
+
+
+def export_invoice(request, id):
+    shipping_fee = None
+    category = Category.objects.all()
+    current_user = request.user
+    order = Order.objects.get(id=id)
+    orderDetails = OrderDetail.objects.filter(order_id=id)
+    # Set template to export
+    template_path = 'user/invoice.html'
+    template = get_template(template_path)
+    
+    context =  {
+        'category': category,
+        'order': order,
+        'orderDetails': orderDetails,
+        'shipping_fee' : shipping_fee,
+        'current_user': current_user
+    }
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+    html = template.render(context)
+    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=request.path)
+    
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>'+ html + '</pre>')
+    
+    return response
+
+def user_comments(request):
+    category = Category.objects.all()
+    current_user = request.user
+    comments = Comment.objects.filter(user_id=current_user.id)
+    context = {
+        'category':category,
+        'comments':comments,
+    }
+    return render(request, "user/user_comments.html", context)
+
+def user_delete_comment(request, id):
+    current_user = request.user
+    Comment.objects.filter(id=id, user_id=current_user.id).delete()
+    messages.success(request, 'Comment deleted..')
+    return HttpResponseRedirect('/user/comments')
+
