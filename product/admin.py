@@ -57,6 +57,7 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
     prepopulated_fields = {'slug': ('title',)}
     exclude = ['have_discount', 'discount_price']
+    search_fields = ['title'] 
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -64,8 +65,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ['status','rate']
     readonly_fields = ('product', 'user' ,'subject','comment', 'rate', 'ip')
 
-
-
+    def has_add_permission(self, request):
+        return False
 
 
 admin.site.register(Category, CategoryAdmin2)   

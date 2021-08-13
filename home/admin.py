@@ -12,10 +12,14 @@ class ContactMessageAdmin(admin.ModelAdmin):
     readonly_fields =('name','subject','email','message','ip')
     list_filter = ['status']
 
+    def has_add_permission(self, request):
+        return False
+
 class SessionAdmin(admin.ModelAdmin):
     def _session_data(self, obj):
         return obj.get_decoded()
     list_display = ['session_key', '_session_data', 'expire_date']
+
 admin.site.register(Session, SessionAdmin)
 
 
