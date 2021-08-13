@@ -135,9 +135,9 @@ def contact(request):
 def category_products(request, id, slug):
     # shopcart = ShopCart.objects.all()
     range_of_price = {
-        "Under $10": 1,
-        "From $10-$20": 2,
-        "Above $20": 3,
+        "Under $100": 1,
+        "From $100-$300": 2,
+        "Over $300": 3,
         "All": 4
     }
 
@@ -158,14 +158,14 @@ def category_products(request, id, slug):
     #Filter product by price
     if price:
         if price == '1':
-            products = products.filter(price__lte=10)
-            price_checked = 'Under $10'
+            products = products.filter(price__lte=99) # < 100
+            price_checked = 'Under $100'
         elif price == '2':
-            products = products.filter(price__gt=10).filter(price__lt=20)
-            price_checked = 'From $10-$20'
+            products = products.filter(price__gt=99).filter(price__lt=301) # >= 100 and <= 300
+            price_checked = 'From $100-$300'
         elif price == '3':
-            products = products.filter(price__gte=20)
-            price_checked = 'Above $20'
+            products = products.filter(price__gte=301) # > 300
+            price_checked = 'Over $300'
     
     if gender:
         if gender == 'men':
