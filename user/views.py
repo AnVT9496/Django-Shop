@@ -215,7 +215,7 @@ def export_invoice(request, id):
 def user_comments(request):
     category = Category.objects.all()
     current_user = request.user
-    comments = Comment.objects.filter(user_id=current_user.id)
+    comments = Comment.objects.filter(user_id=current_user.id).order_by("-id")
     context = {
         'category':category,
         'comments':comments,
