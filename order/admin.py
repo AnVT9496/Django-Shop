@@ -31,11 +31,15 @@ class OrderAdmin(admin.ModelAdmin):
           obj.id
         )
 
+    def has_add_permission(self, request):
+        return False
 
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ['order_id','user', 'product','price','quantity','amount']
     list_filter = ['user']
 
+    def has_add_permission(self, request):
+        return False
     
 
     
