@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from user.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from xhtml2pdf import pisa
 # Create your views here.
@@ -35,7 +35,10 @@ def login_form(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
+        try:
+            user = authenticate(request, username=User.objects.get(email=username), password=password)
+        except:
+            user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             current_user = request.user 
