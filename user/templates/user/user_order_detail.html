@@ -74,7 +74,7 @@
                                 <td class="text-left">{{ order.create_at}}</td>
                             </tr>
 
-                            <th class="text-left">Shipping Inf</th>
+                            <th class="text-left">Shipping Information</th>
                             <td class="text-left">{{ order.adminnote}}</td>
                             </tr>
 
@@ -120,7 +120,7 @@
                                 </tr>
                                 <tr>
                                     <th class="empty" colspan="4"></th>
-                                    <th>PROMOTION</th>
+                                    <th>VOUCHER</th>
                                     <td colspan="2" id="promotion-code">
                                     {% if order.voucher.discount %}
                                         -{{order.voucher.discount}}%

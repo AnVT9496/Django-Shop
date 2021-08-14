@@ -159,7 +159,7 @@ def user_order_detail(request, id):
 def user_orderProduct(request):
     category = Category.objects.filter(status='True')
     current_user = request.user
-    order_product = OrderDetail.objects.filter(user_id = current_user.id)
+    order_product = OrderDetail.objects.filter(user_id = current_user.id).order_by("-create_at")
 
     #Paginator order products
     number_of_order_product = 10

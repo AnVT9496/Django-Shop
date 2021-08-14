@@ -21,7 +21,7 @@ class OrderDetailline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id','first_name', 'last_name','phone','city','total','status', "export_invoice"]
     list_filter = ['status',]
-    readonly_fields = ('user','address','city','country','phone','first_name','ip', 'last_name','phone','city','total','voucher', 'total_after_used_voucher','create_at')
+    readonly_fields = ('user','first_name','last_name','phone','address','city','country','total','voucher', 'total_after_used_voucher','create_at')
     can_delete = False
     inlines = [OrderDetailline]
 
@@ -37,7 +37,8 @@ class OrderAdmin(admin.ModelAdmin):
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ['order_id','user', 'product','price','quantity','amount']
     list_filter = ['user']
-
+    readonly_fields = ['user','product', 'price', 'quantity', 'amount']
+    exclude = ['status']
     def has_add_permission(self, request):
         return False
     
