@@ -112,7 +112,7 @@ def shopcart(request):
     """
     Show all products user added to session cart
     """
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     cart = Cart(request)
     context = {
         'cart': cart,
@@ -158,7 +158,7 @@ def deletefromcart(request):
 
 @login_required(login_url='login_form')
 def orderdetail(request):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     # shopcart = ShopCart.objects.filter(user_id=current_user.id)
     session = request.session

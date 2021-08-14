@@ -31,11 +31,11 @@ def check_havediscount(promotions, products):
 def index(request):
 
     setting = Setting.objects.get(pk = 1)
-    category = Category.objects.all()
-    products_slider = Product.objects.all().order_by('id')[:6] #first 4 product
-    product_newest = Product.objects.all().order_by('-id')[:24]#sản phẩm mới nhất
-    products_lasted = Product.objects.all().order_by('create_at')[:12]
-    products_picked = Product.objects.all().order_by('?')[:8] #random 4 product
+    category = Category.objects.filter(status='True')
+    products_slider = Product.objects.filter(status='True').order_by('id')[:6] #first 4 product
+    product_newest = Product.objects.filter(status='True').order_by('-id')[:24]#sản phẩm mới nhất
+    products_lasted = Product.objects.filter(status='True').order_by('create_at')[:12]
+    products_picked = Product.objects.filter(status='True').order_by('?')[:8] #random 4 product
 
     # #count số lần product title xuất hiện
     # metrics = {
@@ -74,45 +74,45 @@ def index(request):
     return render(request, 'home/index.html', context)
 
 def aboutUs(request):
-    category = Category.objects.all()   #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')   #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/about.html', context)
 
 #footer
 def privacyPolicy(request):
-    category = Category.objects.all()   #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')    #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/policy_privacy.html', context)
 
 def payment_policy(request):
-    category = Category.objects.all()   #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')    #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/policy_payment.html', context)
 
 def warranty_policy(request):
-    category = Category.objects.all()   #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')   #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/policy_warranty.html', context)
 
 def shipping_policy(request):
-    category = Category.objects.all()   #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')    #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/policy_shipping.html', context)
 
 def return_policy(request):
-    category = Category.objects.all()   #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')    #hiển thị thanh navbar
     setting = Setting.objects.get(pk=1)
     context = {'setting': setting,'category':category}
     return render(request, 'home/policy_return.html', context)
 #end footer
 
 def contact(request):
-    category = Category.objects.all()  #hiển thị thanh navbar
+    category = Category.objects.filter(status='True')   #hiển thị thanh navbar
     if request.method == 'POST': # check post
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -150,8 +150,8 @@ def category_products(request, id, slug):
     price = request.POST.get("price", None)
     gender = request.POST.get("gender", None)
 
-    category = Category.objects.all()
-    products = Product.objects.filter(category_id=id)
+    category = Category.objects.filter(status='True') 
+    products = Product.objects.filter(category_id=id, status='True')
     price_checked = 'All'
     gender_checked = 'All'
 
@@ -202,13 +202,13 @@ def search(request):
             query = form.cleaned_data['query'] # get form input data
             catid = form.cleaned_data['catid']
             if catid==0:
-                products=Product.objects.filter(title__icontains=query)  #SELECT * FROM product WHERE title LIKE '%query%'
+                products=Product.objects.filter(title__icontains=query, status='True')  #SELECT * FROM product WHERE title LIKE '%query%'
             else:
-                products = Product.objects.filter(title__icontains=query,category_id=catid)
+                products = Product.objects.filter(title__icontains=query,category_id=catid, status='True')
 
             shopcart = ShopCart.objects.all()
 
-            category = Category.objects.all()
+            category = Category.objects.filter(status='True') 
             context = {'products': products, 'query':query,
                        'category': category, 'shopcart':shopcart }
             return render(request, 'home/search_products.html', context)
@@ -219,7 +219,7 @@ def search(request):
 def search_auto(request):
   if request.is_ajax():
     q = request.GET.get('term', '')
-    products = Product.objects.filter(title__icontains=q)
+    products = Product.objects.filter(title__icontains=q, status='True')
     results = []
     for rs in products:
       products_json = {}
@@ -232,7 +232,7 @@ def search_auto(request):
   return HttpResponse(data, mimetype)
 
 def product_detail(request, id, slug):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True') 
     product = Product.objects.get(pk=id)
     images = Images.objects.filter(product_id=id)
     promotions = Promotion.objects.filter(

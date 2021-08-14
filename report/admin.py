@@ -80,9 +80,10 @@ class ProductReportAdmin(admin.ModelAdmin):
 
         response.context_data['quantity'] = list(
             qs
-            .values('product__title', 'price', 'product__discount_price')
+            .values('product__title', 'product__amount','price', 'product__discount_price')
             .annotate(**metrics)
             .order_by('-frequency')
         )
 
         return response
+

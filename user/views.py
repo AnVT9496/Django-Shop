@@ -24,7 +24,7 @@ from xhtml2pdf import pisa
 
 @login_required(login_url='/login') # Check login
 def index(request):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user  # Access User Session information
     profile = UserProfile.objects.get(user_id=current_user.id)
     context = {'category': category,
@@ -46,7 +46,7 @@ def login_form(request):
         else:
             messages.warning(request, "login error!! User or Password is incorrect")
             return HttpResponseRedirect('/login')
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     context = {'category': category}
     return render(request, 'user/login_form.html', context)
 
@@ -73,7 +73,7 @@ def signup_form(request):
             return HttpResponseRedirect('/signup')
 
     form = SignUpForm()
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     context = {'category': category,
                 'form': form}
     return render(request, 'user/signup_form.html', context)
@@ -97,7 +97,7 @@ def user_update(request):
             messages.warning(request, profile_form.errors )
             return HttpResponseRedirect('/user/update')
     else:
-        category = Category.objects.all()
+        category = Category.objects.filter(status='True')
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.userprofile) #"userprofile" model -> OneToOneField relation with user
         context = {
@@ -119,7 +119,7 @@ def user_password(request):
             messages.error(request, 'Please correct the error below.<br>'+ str(form.errors))
             return HttpResponseRedirect('/user/password')
     else:
-        category = Category.objects.all()
+        category = Category.objects.filter(status='True')
         form = PasswordChangeForm(request.user)
         context =  {'form': form,
                     'category':category}
@@ -127,7 +127,7 @@ def user_password(request):
 
 #My Order page
 def user_orders(request):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     orders = Order.objects.filter(user_id = current_user.id).order_by("-create_at")
 
@@ -143,7 +143,7 @@ def user_orders(request):
 
 #Order detail & produt detail page
 def user_order_detail(request, id):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     order = Order.objects.get(user_id = current_user.id, id=id)
     orderDetails = OrderDetail.objects.filter(order_id=id)
@@ -157,7 +157,7 @@ def user_order_detail(request, id):
 
 #User Order Product page
 def user_orderProduct(request):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     order_product = OrderDetail.objects.filter(user_id = current_user.id)
 
@@ -173,7 +173,7 @@ def user_orderProduct(request):
 
 
 def user_order_product_detail(request, id, order_id):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     order = Order.objects.get(user_id = current_user.id, id=order_id)
     orderDetails = OrderDetail.objects.filter(id=id, user_id = current_user.id)
@@ -187,7 +187,7 @@ def user_order_product_detail(request, id, order_id):
 
 def export_invoice(request, id):
     shipping_fee = None
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     order = Order.objects.get(id=id)
     orderDetails = OrderDetail.objects.filter(order_id=id)
@@ -213,7 +213,7 @@ def export_invoice(request, id):
     return response
 
 def user_comments(request):
-    category = Category.objects.all()
+    category = Category.objects.filter(status='True')
     current_user = request.user
     comments = Comment.objects.filter(user_id=current_user.id).order_by("-id")
     context = {

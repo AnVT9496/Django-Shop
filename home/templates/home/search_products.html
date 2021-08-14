@@ -60,7 +60,9 @@
 					<!-- /store top filter -->
 
 					<!-- STORE -->
+					
 					<div id="store">
+					{% if products %}
 						<!-- row -->
 						<div class="row">
 						<div class="col-md-12">
@@ -114,6 +116,9 @@
 					</div>
 
 						</div>
+					{% else %}
+						<h3>The product you are looking for is not available</h3>
+					{% endif %}
 						<!-- /row -->
 					</div>
 					<!-- /STORE -->

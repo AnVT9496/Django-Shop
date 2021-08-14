@@ -18,7 +18,7 @@
         </th>
         <th>
           <div class="text">
-            <a href="#">Quantity</a>
+            <a href="#">Quantity Sold</a>
           </div>
         </th>
         <th>
@@ -31,6 +31,11 @@
             <a href="#">Discount on product</a>
           </div>
         </th>
+        <th>
+          <div class="text">
+            <a href="#">Inventory</a>
+          </div>
+        </th>
       </tr>
     </thead>
 
@@ -38,9 +43,10 @@
       {% for row in quantity %}
         <tr class="{% cycle 'row1' 'row2' %}">
             <td> {{ row.product__title }} </td>
-            <td> {{ row.frequency }} </td>
+            <td> {{ row.frequency }}</td>
             <td> {{ row.price }} $</td>
             <td> {{ row.product__discount_price }}  </td>
+            <td> {{ row.product__amount }}  </td>
         </tr>
       {% endfor %}
     </tbody>
