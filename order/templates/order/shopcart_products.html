@@ -264,5 +264,20 @@
     })
   })
   </script>
+<script>
+function refresh() {
+$.ajax({
+  url: '{% url 'shopcart' %}',
+  success: function(data) {
+  var dtr = $("#table-cart", data);
+  $('#table-cart').html(dtr);
+        }
+    });
+  setTimeout("refresh()", 3000);
+}
 
+$(function(){
+    refresh();
+});
+</script>
 {% endblock %}

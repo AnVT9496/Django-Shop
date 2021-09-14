@@ -57,7 +57,7 @@ class Order(models.Model):
     
 
     def __str__(self):
-        return f"{self.id}-{self.user.first_name}"
+        return f"{self.id}-{self.user}"
 
 class OrderForm(ModelForm):
     phone = CharField(validators=[PHONE_NUMBER_REGEX],widget=TextInput(attrs={'class':'form-control', 'autocomplete':'off'}), required=True)
